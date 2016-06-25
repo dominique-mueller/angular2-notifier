@@ -1,0 +1,33 @@
+{
+	"name": "angular2-notifier",
+	"description": "WORK IN PROGRESS",
+	"version": "0.1.0",
+	"author": {
+		"name": "Dominique Mueller",
+		"email": "dominique.m.mueller@gmail.com",
+		"url": "https://www.dominique-mueller.de"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/dominique-mueller/angular2-notifier.git"
+	},
+	"keywords": [
+		"angular2",
+		"angular",
+		"notifier",
+		"notification",
+		"toast",
+		"toastr",
+		"alert",
+		"library",
+		"js"
+	],
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/dominique-mueller/angular2-notifier/issues"
+	},
+	"homepage": "https://github.com/dominique-mueller/angular2-notifier",
+	"scripts": {
+		"test": "echo 'No tests defined yet.' && exit 0"
+	}
+}
