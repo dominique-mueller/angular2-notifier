@@ -2,10 +2,6 @@
 node_modules
 typings
 
-# Build
-build
-demo_build
-
 # Log files
 *.log
 undefinederror.json

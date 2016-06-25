@@ -3,7 +3,8 @@ node_modules
 typings
 
 # Build
-build
+index.js
+src/*.js
 demo/*.js
 
 # Log files
