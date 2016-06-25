@@ -1,0 +1,20 @@
+# Dependencies
+node_modules
+typings
+
+# Log files
+*.log
+undefinederror.json
+undefinedinfo.json
+info.log.json
+error.log.json
+
+# Editor settings
+*.sublime-workspace
+*.sublime-project
+
+# Development files
+*.todo
+*.old
+*.temp
+*.TMP
