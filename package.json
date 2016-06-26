@@ -44,6 +44,7 @@
 		"browser-sync": "2.13.x",
 		"codelyzer": "0.0.x",
 		"core-js": "2.4.x",
+		"del": "2.2.x",
 		"gulp": "github:gulpjs/gulp#4.0",
 		"gulp-typescript": "2.13.x",
 		"rxjs": "5.0.0-beta.6",

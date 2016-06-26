@@ -8,9 +8,9 @@ const browserSync = require( 'browser-sync' );
 const typescript = require( 'gulp-typescript' );
 
 /**
- * Gulp task: Build TypeScript
+ * Gulp task: Compile the project TypeScript into JavaScript
  */
-gulp.task( 'typescript:build', () => {
+gulp.task( 'typescript:build:project', () => {
 
 	return gulp
 
@@ -37,7 +37,7 @@ gulp.task( 'typescript:build', () => {
 } );
 
 /**
- * Gulp task: Build TypeScript for demo
+ * Gulp task: Compile the demo TypeScript into JavaScript
  */
 gulp.task( 'typescript:build:demo', () => {
 

@@ -1,7 +1,7 @@
 /**
  * Notification model
  */
-export class Notification {
+export class NotifierNotification {
 
 	/**
 	 * Notification type

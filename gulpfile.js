@@ -9,14 +9,35 @@ const browserSync = require( 'browser-sync' );
 /**
  * Task imports
  */
-const typescriptBuild = require( './gulp-tasks/typescript.build.js' );
+const typescriptBuild = require( './gulp-tasks/typescript-build' );
+const envClean = require( './gulp-tasks/env-clean' );
+
+/**
+ * Gulp task: Build project
+ */
+gulp.task( 'build:project',
+	gulp.series( [
+		'env:clean:project',
+		'typescript:build:project'
+	] )
+);
+
+/**
+ * Gulp task: Build demo
+ */
+gulp.task( 'build:demo',
+	gulp.series( [
+		'env:clean:demo',
+		'typescript:build:demo'
+	] )
+);
 
 /**
  * Gulp task: Watcher using browser-sync
  */
 gulp.task( 'watch',
 	gulp.series( [
-		gulp.parallel( [ 'typescript:build', 'typescript:build:demo' ] ),
+		gulp.parallel( [ 'build:project', 'build:demo' ] ),
 		() => {
 
 			// Setup browser-sync
@@ -39,11 +60,10 @@ gulp.task( 'watch',
 			} );
 
 			// Watch project files
-			gulp.watch( [ './src/*.ts', './index.ts' ], gulp.series( [ 'typescript:build' ] ) );
+			gulp.watch( [ './src/*.ts', './index.ts' ], gulp.series( 'typescript:build:project' ) );
 
 			// Watch demo files
-			gulp.watch( './demo/*.ts', gulp.series( [ 'typescript:build:demo' ] ) );
-			gulp.watch( [ './demo/*.html', './demo/systemjs.config.js' ] ).on( 'change', browserSync.stream ); // TODO: This isn't working at all :/
+			gulp.watch( [ './demo/*.ts' ], gulp.series( [ 'typescript:build:demo' ] ) );
 
 		}
 	] )

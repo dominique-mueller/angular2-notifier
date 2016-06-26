@@ -2,14 +2,17 @@
  * Imports
  */
 import { Component } from '@angular/core';
-import { NotifierService } from '../';
+import { NotifierService, NotifierOptions, provideNotifierOptions } from '../';
 
 /**
  * App component
  */
 @Component( {
 	providers: [
-		NotifierService
+		NotifierService,
+		provideNotifierOptions( {
+			autoHide: 5000
+		} )
 	],
 	selector: 'x-app',
 	templateUrl: './app.component.html',
@@ -30,7 +33,6 @@ export class AppComponent {
 	}
 
 	private test() {
-		console.log( 'Should notify now ...' );
 		this.notifier.info( 'This is a test.' );
 	}
 
