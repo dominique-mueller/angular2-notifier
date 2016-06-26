@@ -9,13 +9,27 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class NotifierOptions {
 
-	autoHide: boolean|number;
+	/**
+	 * Positioning of all notifications
+	 * Note: String maps to class name
+	 */
+	public position: string;
 
-	// design: string; // Maps to CSS class
+	/**
+	 * Notification theme
+	 * Note: String maps to class name
+	 */
+	public theme: string;
 
-	constructor( options?: any ) {
-		// console.log(options);
-		this.autoHide = options.autoHide;
+	/**
+	 * Constructor
+	 * @param {any = {}} options Custom options, default options as fallback
+	 */
+	constructor( options: Object = {
+		'position': 'left-bottom',
+		'theme': 'material'
+	} ) {
+		Object.assign( this, options ); // Merge
 	}
 
 }

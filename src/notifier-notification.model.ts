@@ -1,4 +1,9 @@
 /**
+ * External imports
+ */
+import { ElementRef } from '@angular/core';
+
+/**
  * Notification model
  */
 export class NotifierNotification {
@@ -6,12 +11,17 @@ export class NotifierNotification {
 	/**
 	 * Notification type
 	 */
-	private type: string;
+	public type: string;
 
 	/**
 	 * Notification message
 	 */
-	private message: string;
+	public message: string;
+
+	/**
+	 * Calculated height (in the DOM)
+	 */
+	public elementRef: ElementRef;
 
 	/**
 	 * Constructor
@@ -21,6 +31,7 @@ export class NotifierNotification {
 	constructor( type: string, message: string ) {
 		this.type = type;
 		this.message = message;
+		this.elementRef = null;
 	}
 
 }

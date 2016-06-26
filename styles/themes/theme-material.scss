@@ -1,0 +1,9 @@
+// THEME: MATERIAL
+
+.x-notifier__notification {
+	&.x-notifier__notification--material {
+		padding: 10px 20px;
+		background-color: #444;
+		color: #FFF;
+	}
+}

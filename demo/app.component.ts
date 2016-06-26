@@ -11,11 +11,11 @@ import { NotifierService, NotifierOptions, provideNotifierOptions } from '../';
 	providers: [
 		NotifierService,
 		provideNotifierOptions( {
-			autoHide: 5000
+			position: 'left-top'
 		} )
 	],
 	selector: 'x-app',
-	templateUrl: './app.component.html',
+	templateUrl: './app.component.html'
 } )
 export class AppComponent {
 
@@ -23,6 +23,8 @@ export class AppComponent {
 	 * Notifier service reference
 	 */
 	private notifier: NotifierService;
+
+	private index: number = 0; // TODO: Remove me
 
 	/**
 	 * Constructor
@@ -32,8 +34,9 @@ export class AppComponent {
 		this.notifier = notifier;
 	}
 
-	private test() {
-		this.notifier.info( 'This is a test.' );
+	private test(): void {
+		this.notifier.info( 'This is notification #' + this.index );
+		this.index++;
 	}
 
 }

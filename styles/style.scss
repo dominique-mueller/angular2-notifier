@@ -1,6 +1,13 @@
 // STYLES
 // This file imports ALL available styles
 // For performance and mainainability reasons, you should only include and use the files you actually need
+// Sidenote: We do NOT use partials and explicitely define the file type so compiling works properly
+
+// Import core first
+@import "./core.scss";
 
 // Import all positions
 @import "./positions/position-left-bottom.scss";
+
+// Import all themes
+@import "./themes/theme-material.scss";
