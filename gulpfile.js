@@ -11,14 +11,16 @@ const browserSync = require( 'browser-sync' );
  */
 const typescriptBuild = require( './gulp-tasks/typescript-build' );
 const envClean = require( './gulp-tasks/env-clean' );
+const sassBuild = require( './gulp-tasks/sass-build' );
 
 /**
  * Gulp task: Build project
  */
-gulp.task( 'build:project',
+gulp.task( 'build:simple',
 	gulp.series( [
-		'env:clean:project',
-		'typescript:build:project'
+		'env:clean--single',
+		'typescript:build--single',
+		'sass:build--single'
 	] )
 );
 
@@ -27,8 +29,8 @@ gulp.task( 'build:project',
  */
 gulp.task( 'build:demo',
 	gulp.series( [
-		'env:clean:demo',
-		'typescript:build:demo'
+		'env:clean--demo',
+		'typescript:build--demo'
 	] )
 );
 
@@ -37,7 +39,7 @@ gulp.task( 'build:demo',
  */
 gulp.task( 'watch',
 	gulp.series( [
-		gulp.parallel( [ 'build:project', 'build:demo' ] ),
+		gulp.parallel( [ 'build:simple', 'build:demo' ] ),
 		() => {
 
 			// Setup browser-sync
@@ -60,10 +62,11 @@ gulp.task( 'watch',
 			} );
 
 			// Watch project files
-			gulp.watch( [ './src/*.ts', './index.ts' ], gulp.series( 'typescript:build:project' ) );
+			gulp.watch( [ './src/*.ts', './index.ts' ], gulp.series( 'typescript:build--single' ) );
+			gulp.watch( [ './styles/**/*.scss' ], gulp.series( 'sass:build--single' ) );
 
 			// Watch demo files
-			gulp.watch( [ './demo/*.ts' ], gulp.series( [ 'typescript:build:demo' ] ) );
+			gulp.watch( [ './demo/*.ts' ], gulp.series( [ 'typescript:build--demo' ] ) );
 
 		}
 	] )

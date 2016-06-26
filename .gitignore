@@ -5,6 +5,7 @@ typings
 # Build
 index.js
 src/*.js
+styles/**/*.css
 demo/*.js
 
 # Log files
