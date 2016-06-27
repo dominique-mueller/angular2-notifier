@@ -26,7 +26,8 @@ import { NotifierNotificationComponent } from './notifier-notification.component
 	template: `
 		<ul class="x-notifier__container-list">
 			<li *ngFor="let notification of notifications">
-				<x-notifier-notification [notification]="notification" #test></x-notifier-notification>
+				<x-notifier-notification [notification]="notification">
+				</x-notifier-notification>
 			</li>
 		</ul>
 		`
@@ -73,9 +74,9 @@ export class NotifierContainerComponent implements AfterViewInit {
 		this.notifications = [];
 		this.numberOfNotifications = 0;
 
-		// TODO: Save doc height?
-		console.log('++++');
-		console.log(doc);
+		// TODO: Save doc height for later?
+		// console.log('++++');
+		// console.log(doc);
 
 	}
 
@@ -92,8 +93,8 @@ export class NotifierContainerComponent implements AfterViewInit {
 				console.log('NEW ONE');
 
 				// Set / update values
-				this.notifications[ this.numberOfNotifications ].elementRef =
-					data.toArray()[ this.numberOfNotifications ].getElementRef();
+				this.notifications[ this.numberOfNotifications ].component =
+					data.toArray()[ this.numberOfNotifications ];
 
 				// Skip first notification (no shifting necessary)
 				if ( this.numberOfNotifications > 0 ) {
@@ -101,15 +102,20 @@ export class NotifierContainerComponent implements AfterViewInit {
 					// TODO: TEST ANIMATION
 					// Iterate over all notfications (except the new one)
 					let animationEndValue: number = 0;
-					let distanceBetween: number = 10; // TODO: Extract them?
+					let distanceBetween: number = this.options.distances[ 2 ];
 					let animationFinishedPromises: Array<any> = [];
 					for ( let i: number = this.notifications.length - 2; i >= 0; i-- ) {
 
 						let animationStartValue: number = animationEndValue; // Save start value
-						animationEndValue += this.notifications[ i ].elementRef.nativeElement.offsetHeight + distanceBetween; // Calc end value
-						// this.notifications[ i ].elementRef.nativeElement.style.transform = `translateY( -${ end }px )`;
-						let animation: any = this.notifications[ i ].elementRef.nativeElement.animate(
-							[
+						animationEndValue += this.notifications[ i ].component.elementRef.nativeElement.offsetHeight + distanceBetween; // Calc end value
+
+						// this.notifications[ i ].component.elementRef.nativeElement.style.transform = `translateY( -${ animationEndValue }px )`; // Animation through transition in CSS
+						// this.notifications[ i ].component.elementRef.nativeElement.style.transform = `matrix( 1, 0, 0, 1, 0, -${ animationEndValue } )`;
+						// console.log( getComputedStyle( this.notifications[ i ].component.elementRef.nativeElement ).getPropertyValue( 'transform' ) );
+
+						// TODO: Extract "shiftAnimation" into notification component
+						let animation: any = this.notifications[ i ].component.elementRef.nativeElement.animate(
+							[ // TODO: Shorter version?
 								{ // From ...
 									transform: `translateY( -${ animationStartValue }px )`
 								},
@@ -118,7 +124,7 @@ export class NotifierContainerComponent implements AfterViewInit {
 								}
 							],
 							{
-								duration: 500, // Duration in ms
+								duration: 400, // Duration in ms
 								easing: 'ease-in-out',
 								fill: 'forwards' // Keep position after paint
 							}
@@ -130,12 +136,19 @@ export class NotifierContainerComponent implements AfterViewInit {
 					Promise
 						.all( animationFinishedPromises )
 						.then( () => {
+							this.notifications[ this.notifications.length - 1 ].component.animateIn();
 							console.log('ANIMATION COMPLETELY FINISHED!');
 						} );
 
+				} else {
+					setTimeout( () => {
+						this.notifications[ this.notifications.length - 1 ].component.animateIn();
+					} );
 				}
 
 				this.numberOfNotifications++;
+
+				console.log(this.notifications);
 
 			} else {
 				// One got away

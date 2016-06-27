@@ -1,7 +1,7 @@
 /**
  * External imports
  */
-import { Component, Input, Optional, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, Input, Optional, AfterViewInit, ElementRef, Renderer } from '@angular/core';
 
 /**
  * Internal imports
@@ -15,7 +15,10 @@ import { NotifierOptions } from './notifier-options.model';
  */
 @Component( {
 	host: {
-		'[attr.class]': 'classMap'
+		'class': 'x-notifier__notification'
+		// '[attr.class]': 'classMap',
+		// '[ngClass]': '{ \'is-visible\': isVisible }'
+		// '[ngStyle]': 'customStyles'
 	},
 	selector: 'x-notifier-notification',
 	template: `
@@ -31,6 +34,11 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	private notification: NotifierNotification;
 
 	/**
+	 * Rederer reference, e.g. for the DOM
+	 */
+	private renderer: Renderer;
+
+	/**
 	 * Notifier options
 	 */
 	private options: NotifierOptions;
@@ -43,26 +51,54 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	/**
 	 * Reference to this component
 	 */
-	private elementRef: ElementRef;
+	public elementRef: ElementRef;
+
+	private isVisible: boolean;
 
 	/**
 	 * Constructor
 	 * @param {NotifierOptions} @Optional() notifierOptions Custom notifier options
 	 */
-	constructor( @Optional() notifierOptions: NotifierOptions, elementRef: ElementRef ) {
+	constructor( @Optional() notifierOptions: NotifierOptions, elementRef: ElementRef, renderer: Renderer ) {
+
+		// Initialize
+		this.renderer = renderer;
 
 		// Use custom notifier options if present
 		this.options = notifierOptions === null ? new NotifierOptions() : notifierOptions;
-		this.classMap = [
-			'x-notifier__notification',
-			`x-notifier__notification--${ this.options.position }`,
-			`x-notifier__notification--${ this.options.theme }`
-		].join( ' ' );
+		this.elementRef = elementRef;
+
+
+		switch ( this.options.position[ 0 ] ) {
+			case 'left':
+				this.renderer.setElementStyle( this.elementRef.nativeElement, 'left', `${ this.options.distances[ 0 ] }px` );
+				break;
+			case 'right':
+				this.renderer.setElementStyle( this.elementRef.nativeElement, 'right', `${ this.options.distances[ 0 ] }px` );
+				break;
+			default:
+				break;
+		}
+		switch ( this.options.position[ 1 ] ) {
+			case 'top':
+				this.renderer.setElementStyle( this.elementRef.nativeElement, 'top', `${ this.options.distances[ 1 ] }px` );
+				break;
+			case 'bottom':
+				this.renderer.setElementStyle( this.elementRef.nativeElement, 'bottom', `${ this.options.distances[ 1 ] }px` );
+				break;
+			default:
+				break;
+		}
+
+		this.renderer.setElementStyle( this.elementRef.nativeElement, 'opacity', '0' );
+
+		this.renderer.setElementClass( this.elementRef.nativeElement, `x-notifier__notification--${ this.options.theme }`, true );
+		this.renderer.setElementClass( this.elementRef.nativeElement, `x-notifier__notification--${ this.options.animation }`, true );
 
 		// console.log('******');
 		// console.log(elementRef.nativeElement.offsetHeight);
 
-		this.elementRef = elementRef;
+		this.isVisible = false;
 
 	}
 
@@ -73,11 +109,27 @@ export class NotifierNotificationComponent implements AfterViewInit {
 
 	}
 
-	/**
-	 * Get / calculate the current height
-	 */
-	public getElementRef(): ElementRef {
-		return this.elementRef;
+	public animateIn(): void {
+		// this.renderer.setElementClass( this.elementRef.nativeElement, `x-notifier__notification--visible`, true );
+
+		let animation: any = this.elementRef.nativeElement.animate(
+			[ // TODO: Shorter version?
+				{ // From ...
+					opacity: 0,
+					transform: 'translateX( -120% )'
+				},
+				{ // To ...
+					opacity: 1,
+					transform: 'translateX( 0 )'
+				}
+			],
+			{
+				duration: 400, // Duration in ms
+				easing: 'ease-out',
+				fill: 'forwards' // Keep position after paint
+			}
+		);
+
 	}
 
 }

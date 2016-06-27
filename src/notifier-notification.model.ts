@@ -4,6 +4,11 @@
 import { ElementRef } from '@angular/core';
 
 /**
+ * Internal imports
+ */
+import { NotifierNotificationComponent } from './notifier-notification.component';
+
+/**
  * Notification model
  */
 export class NotifierNotification {
@@ -19,9 +24,11 @@ export class NotifierNotification {
 	public message: string;
 
 	/**
-	 * Calculated height (in the DOM)
+	 * Component
 	 */
-	public elementRef: ElementRef;
+	public component: NotifierNotificationComponent;
+
+	public isVisible: boolean;
 
 	/**
 	 * Constructor
@@ -31,7 +38,8 @@ export class NotifierNotification {
 	constructor( type: string, message: string ) {
 		this.type = type;
 		this.message = message;
-		this.elementRef = null;
+		this.component = null;
+		this.isVisible = false;
 	}
 
 }
