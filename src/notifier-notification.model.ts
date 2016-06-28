@@ -28,7 +28,9 @@ export class NotifierNotification {
 	 */
 	public component: NotifierNotificationComponent;
 
-	public isVisible: boolean;
+	public index: number;
+
+	public height: number;
 
 	/**
 	 * Constructor
@@ -39,7 +41,8 @@ export class NotifierNotification {
 		this.type = type;
 		this.message = message;
 		this.component = null;
-		this.isVisible = false;
+		this.index = 0;
+		this.height = 0;
 	}
 
 }

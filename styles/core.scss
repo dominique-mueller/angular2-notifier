@@ -18,5 +18,11 @@
 .x-notifier__notification {
 	display: block;
 	position: fixed;
-	z-index: 99999;
+	visibility: hidden; // Will get updated before animation happens
+	z-index: 1000;
+
+	// Scrolling performance matters!
+	// See details at <https://benfrain.com/improving-css-performance-fixed-position-elements/>
+	backface-visibility: hidden;
+
 }

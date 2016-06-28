@@ -1,7 +1,7 @@
 /**
  * External imports
  */
-import { Component, AfterViewInit, Optional, ViewChildren, Inject, QueryList } from '@angular/core';
+import { Component, Optional, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/platform-browser';
 
 /**
@@ -20,19 +20,19 @@ import { NotifierNotificationComponent } from './notifier-notification.component
 		NotifierNotificationComponent
 	],
 	host: {
-		'[attr.class]': 'classMap'
+		'class': 'x-notifier__container'
 	},
 	selector: 'x-notifier-container',
 	template: `
 		<ul class="x-notifier__container-list">
 			<li *ngFor="let notification of notifications">
-				<x-notifier-notification [notification]="notification">
+				<x-notifier-notification [notification]="notification" (created)="onCreated( $event )">
 				</x-notifier-notification>
 			</li>
 		</ul>
 		`
 } )
-export class NotifierContainerComponent implements AfterViewInit {
+export class NotifierContainerComponent {
 
 	/**
 	 * Notifier options
@@ -40,39 +40,20 @@ export class NotifierContainerComponent implements AfterViewInit {
 	private options: NotifierOptions;
 
 	/**
-	 * Custom CSS classes, depending on notifier options
-	 */
-	private classMap: string;
-
-	/**
 	 * List of currently opened notifications
 	 */
 	private notifications: Array<NotifierNotification>;
 
 	/**
-	 * Number of currently opened notifications (updates a bit delayed)
-	 */
-	private numberOfNotifications: number;
-
-	/**
-	 * Reference list of currently opened notifications
-	 */
-	@ViewChildren( NotifierNotificationComponent )
-	private notificationsRef: QueryList<NotifierNotificationComponent>;
-
-	/**
-	 * Constructor
-	 * @param {NotifierOptions} @Optional() notifierOptions Custom notifier options
+	 * Constructor - TODO
 	 */
 	constructor( @Optional() notifierOptions: NotifierOptions, @Inject( DOCUMENT ) doc: any ) {
 
 		// Use custom notifier options if present
 		this.options = notifierOptions === null ? new NotifierOptions() : notifierOptions;
-		this.classMap = `x-notifier__container`;
 
 		// Setup empty list of notifications
 		this.notifications = [];
-		this.numberOfNotifications = 0;
 
 		// TODO: Save doc height for later?
 		// console.log('++++');
@@ -80,95 +61,32 @@ export class NotifierContainerComponent implements AfterViewInit {
 
 	}
 
-	/**
-	 * Call this hook when the components gets initialized
-	 */
-	public ngAfterViewInit(): void {
+	public onCreated( updatedNotification: NotifierNotification ): void {
 
-		// TODO: Extract the upcoming stuff into own function
-		this.notificationsRef.changes.subscribe( ( data: QueryList<NotifierNotificationComponent> ) => {
+		// Update notification
+		this.notifications[ this.notifications.length - 1 ] = updatedNotification;
 
-			if ( data.length > this.numberOfNotifications ) {
-				// We got a new one
-				console.log('NEW ONE');
+		// Check if this is the first notification (and therefore if shifting is even necessary)
+		if ( this.notifications.length > 1 ) {
 
-				// Set / update values
-				this.notifications[ this.numberOfNotifications ].component =
-					data.toArray()[ this.numberOfNotifications ];
-
-				// Skip first notification (no shifting necessary)
-				if ( this.numberOfNotifications > 0 ) {
-
-					// TODO: TEST ANIMATION
-					// Iterate over all notfications (except the new one)
-					let animationEndValue: number = 0;
-					let distanceBetween: number = this.options.distances[ 2 ];
-					let animationFinishedPromises: Array<any> = [];
-					for ( let i: number = this.notifications.length - 2; i >= 0; i-- ) {
-
-						let animationStartValue: number = animationEndValue; // Save start value
-						animationEndValue += this.notifications[ i ].component.elementRef.nativeElement.offsetHeight + distanceBetween; // Calc end value
-
-						// this.notifications[ i ].component.elementRef.nativeElement.style.transform = `translateY( -${ animationEndValue }px )`; // Animation through transition in CSS
-						// this.notifications[ i ].component.elementRef.nativeElement.style.transform = `matrix( 1, 0, 0, 1, 0, -${ animationEndValue } )`;
-						// console.log( getComputedStyle( this.notifications[ i ].component.elementRef.nativeElement ).getPropertyValue( 'transform' ) );
-
-						// TODO: Extract "shiftAnimation" into notification component
-						let animation: any = this.notifications[ i ].component.elementRef.nativeElement.animate(
-							[ // TODO: Shorter version?
-								{ // From ...
-									transform: `translateY( -${ animationStartValue }px )`
-								},
-								{ // To ...
-									transform: `translateY( -${ animationEndValue }px )`
-								}
-							],
-							{
-								duration: 400, // Duration in ms
-								easing: 'ease-in-out',
-								fill: 'forwards' // Keep position after paint
-							}
-						);
-						animationFinishedPromises.push( animation.finished ); // Promise instead of callback ... yay!
-
-					}
-
-					Promise
-						.all( animationFinishedPromises )
-						.then( () => {
-							this.notifications[ this.notifications.length - 1 ].component.animateIn();
-							console.log('ANIMATION COMPLETELY FINISHED!');
-						} );
-
-				} else {
-					setTimeout( () => {
-						this.notifications[ this.notifications.length - 1 ].component.animateIn();
-					} );
-				}
-
-				this.numberOfNotifications++;
-
-				console.log(this.notifications);
-
-			} else {
-				// One got away
+			// Shift all notifications (except the latest one)
+			let animationPromises: Array<Promise<any>> = [];
+			for ( let i: number = this.notifications.length - 2; i >= 0; i-- ) {
+				animationPromises.push( this.notifications[ i ].component.animateShift( updatedNotification.height ) );
 			}
+			Promise.all( animationPromises ).then( () => {
+				updatedNotification.component.animateIn();
+			} );
 
-			// TODO: Read values from doc
-			// console.log( getComputedStyle( data.toArray()[ 0 ].elementRef.nativeElement ).getPropertyValue( 'bottom' ) );
-
-		} );
+		} else {
+			updatedNotification.component.animateIn();
+		}
 
 	}
 
 	public addNotification( notification: NotifierNotification ): void {
-
+		notification.index = this.notifications.length - 1;
 		this.notifications.push( notification );
-
-		// setTimeout( () => {
-		// 	this.notifications = [];
-		// }, 2000 );
-
 	}
 
 }
