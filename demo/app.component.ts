@@ -39,4 +39,8 @@ export class AppComponent {
 		this.index++;
 	}
 
+	private test2(): void {
+		this.notifier.remove();
+	}
+
 }

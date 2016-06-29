@@ -10,39 +10,32 @@ import { NotifierNotificationComponent } from './notifier-notification.component
 
 /**
  * Notification model
+ * TODO: Description
  */
 export class NotifierNotification {
 
 	/**
-	 * Notification type
+	 * Notification type, maps to class name - TODO: Details
 	 */
 	public type: string;
 
 	/**
-	 * Notification message
+	 * Notification message (string only for now) - TODO: HTML template?
 	 */
 	public message: string;
 
 	/**
-	 * Component
+	 * Component reference
 	 */
 	public component: NotifierNotificationComponent;
 
-	public index: number;
-
-	public height: number;
-
 	/**
-	 * Constructor
-	 * @param {string} type    Notification type
-	 * @param {string} message Notification message
+	 * Constructor - TODO
 	 */
 	constructor( type: string, message: string ) {
 		this.type = type;
 		this.message = message;
 		this.component = null;
-		this.index = 0;
-		this.height = 0;
 	}
 
 }

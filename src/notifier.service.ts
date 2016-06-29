@@ -72,4 +72,10 @@ export class NotifierService {
 		this.notifierContainerRef.instance.addNotification( notification );
 	}
 
+	public remove(): void {
+		this.notifierContainerRef.instance.removeNotification();
+	}
+
+	// TODO: Global event listeners as Observables
+
 }

@@ -1,7 +1,7 @@
 /**
  * External imports
  */
-import { Component, Input, Output, EventEmitter, Optional, AfterViewInit, ElementRef, Renderer } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Optional, Output, Renderer } from '@angular/core';
 
 /**
  * Internal imports
@@ -15,7 +15,8 @@ import { NotifierOptions } from './notifier-options.model';
  */
 @Component( {
 	host: {
-		'class': 'x-notifier__notification'
+		'class': 'x-notifier__notification',
+		'(click)': 'onDismiss()' // TODO: Remove / replace me
 	},
 	selector: 'x-notifier-notification',
 	template: `
@@ -25,30 +26,46 @@ import { NotifierOptions } from './notifier-options.model';
 export class NotifierNotificationComponent implements AfterViewInit {
 
 	/**
-	 * Input parameter: Notification object
+	 * Input: Notification object
 	 */
 	@Input()
 	private notification: NotifierNotification;
 
+	/**
+	 * Output: Created event, emits a reference to this component
+	 */
 	@Output()
-	private created: EventEmitter<any>;
+	private created: EventEmitter<NotifierNotificationComponent>;
 
 	/**
-	 * Rederer reference, e.g. for the DOM
+	 * Output: Dismiss event, emits a reference to this component
+	 */
+	@Output()
+	private dismiss: EventEmitter<NotifierNotificationComponent>;
+
+	/**
+	 * Internal: Rederer reference
 	 */
 	private renderer: Renderer;
 
 	/**
-	 * Notifier options
+	 * Internal: Notifier options
 	 */
 	private options: NotifierOptions;
 
 	/**
-	 * Reference to the native element of this component
+	 * Internal: DOM element reference
 	 */
-	private element: any;
+	private element: any; // It's kind of a 'HTMLElement' ... but ... no one knows for sure ...
 
-	private currentShiftValue: number;
+	// TODO
+	private currentHeight: number;
+
+	// TODO
+	private currentShift: number;
+
+	// TODO
+	private timerId: number;
 
 	/**
 	 * Constructor - TODO
@@ -58,14 +75,21 @@ export class NotifierNotificationComponent implements AfterViewInit {
 		// Setup
 		this.renderer = renderer;
 		this.element = elementRef.nativeElement;
-		this.created = new EventEmitter<any>();
-		this.currentShiftValue = 0;
+		this.created = new EventEmitter<NotifierNotificationComponent>();
+		this.dismiss = new EventEmitter<NotifierNotificationComponent>();
+
+		this.currentHeight = 0;
+		this.currentShift = 0;
+		this.timerId = null;
 
 		// Use custom notifier options if present
 		this.options = notifierOptions === null ? new NotifierOptions() : notifierOptions;
 
 	}
 
+	/**
+	 * Initial setup (only once) - TODO
+	 */
 	public ngAfterViewInit(): void {
 
 		// Set position
@@ -90,53 +114,35 @@ export class NotifierNotificationComponent implements AfterViewInit {
 				break;
 		}
 
-		// Add classes
+		// Add custom class
 		this.renderer.setElementClass( this.element, `x-notifier__notification--${ this.options.theme }`, true );
-		this.renderer.setElementStyle( this.element, 'opacity', '0' );
 
-		// Tell the parent our new notification object
-		this.notification.component = this;
-		this.notification.height = this.element.offsetHeight; // -> DOM
-		this.created.emit( this.notification );
+		// Save current height (perf matters!)
+		this.currentHeight = this.element.offsetHeight;
+
+		// Throw created event, emit this notification component
+		this.created.emit( this );
 
 	}
 
-	public animateIn(): void {
+	public getHeight(): number {
+		return this.currentHeight;
+	}
+
+	/**
+	 * Animate this notification component in
+	 * @return {Promise<any>} Promise, resolved when animation has finished (resolves with 'Animation' object)
+	 */
+	public animateIn(): Promise<any> {
+		this.renderer.setElementStyle( this.element, 'opacity', '0' ); // Prevent flicker
 		this.renderer.setElementStyle( this.element, 'visibility', 'visible' );
-		return this.element.animate(
+		const animation: any = this.element.animate(
 			[
 				{ // From ...
 					opacity: 0
-					// transform: 'translate3d( -100%, 0, 0 )'
 				},
 				{ // To ...
 					opacity: 1
-					// transform: 'translate3d( 0, 0, 0 )'
-				}
-			],
-			{
-				delay: 10, // I mean ... why not ...
-				duration: 300, // Duration in ms
-				easing: 'ease-in-out',
-				fill: 'forwards' // Keep position after paint
-			}
-		).finished; // Return finished Promise (no callbacks ... yay!)
-	}
-
-	public animateOut(): void {
-
-	}
-
-	// TODO: Promise type "Animation"?
-	public animateShift( shiftDistance: number ): Promise<any> {
-		let newShiftValue: number = this.currentShiftValue + shiftDistance + this.options.distances[ 2 ];
-		let animation: any = this.element.animate(
-			[
-				{ // From ...
-					transform: `translate3d( 0, -${ this.currentShiftValue }px, 0 )`
-				},
-				{ // To ...
-					transform: `translate3d( 0, -${ newShiftValue }px, 0 )`
 				}
 			],
 			{
@@ -146,8 +152,82 @@ export class NotifierNotificationComponent implements AfterViewInit {
 				fill: 'forwards' // Keep position after paint
 			}
 		);
-		this.currentShiftValue = newShiftValue;
+		if ( this.options.autoHide !== false ) {
+			this.startTimer();
+		}
 		return animation.finished; // Return finished Promise (no callbacks ... yay!)
+	}
+
+	/**
+	 * Animate this notification component out
+	 * @return {Promise<any>} Promise, resolved when animation has finished (resolves with 'Animation' object)
+	 */
+	public animateOut(): Promise<any> {
+		const animation: any = this.element.animate(
+			[
+				{ // From ...
+					opacity: 1
+				},
+				{ // To ...
+					opacity: 0
+				}
+			],
+			{
+				delay: 10, // I mean ... why not ...
+				duration: 300, // Duration in ms
+				easing: 'ease-in-out',
+				fill: 'forwards' // Keep position after paint
+			}
+		);
+		return animation.finished; // Return finished Promise (no callbacks ... yay!)
+	}
+
+	/**
+	 * Shift this notification component vertically
+	 * @param  {number}       value Value (positive or negative), will be used as px value
+	 * @return {Promise<any>}       Promise, resolved when animation has finished (resolves with 'Animation' object)
+	 */
+	public animateShift( value: number ): Promise<any> {
+		let newShift: number;
+		if ( value > 0 ) { // TODO: Better logic, depending on options (position)
+			newShift = this.currentShift + value + this.options.distances[ 2 ];
+		} else {
+			newShift = this.currentShift - Math.abs( value ) - this.options.distances[ 2 ];
+		}
+		const animation: any = this.element.animate(
+			[
+				{ // From ...
+					transform: `translate3d( 0, -${ this.currentShift }px, 0 )`
+				},
+				{ // To ...
+					transform: `translate3d( 0, -${ newShift }px, 0 )`
+				}
+			],
+			{
+				delay: 10, // I mean ... why not ...
+				duration: 300, // Duration in ms
+				easing: 'ease-in-out',
+				fill: 'forwards' // Keep position after paint
+			}
+		);
+		this.currentShift = newShift;
+		return animation.finished; // Return finished Promise (no callbacks ... yay!)
+	}
+
+	// TODO: Extract into own file, as Countdown class
+	private startTimer(): void {
+		this.timerId = setTimeout(
+			() => {
+				this.dismiss.emit( this );
+			},
+			this.options.autoHide
+		);
+	}
+
+	// TODO
+	public onDismiss(): void {
+		clearTimeout( this.timerId );
+		this.dismiss.emit( this );
 	}
 
 }
