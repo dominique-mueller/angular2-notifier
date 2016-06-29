@@ -9,12 +9,11 @@ import { Provider } from '@angular/core';
 import { NotifierOptions } from './notifier-options.model';
 
 /**
- * Provide custom notifier options
- * @param  {any}      options Custom notifier options - TODO: Type (interface?)
- * @return {Provider}         Provider
+ * Provide custom notifier options - TODO
  */
-export function provideNotifierOptions( options: any ): Provider {
-	return new Provider( NotifierOptions, {
+export function provideNotifierOptions( options: any ): Object {
+	return {
+		provide: NotifierOptions,
 		useValue: new NotifierOptions( options )
-	} );
+	};
 }
