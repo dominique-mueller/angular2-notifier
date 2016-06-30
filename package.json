@@ -33,14 +33,14 @@
 		"test": "echo 'No tests defined yet.' && exit 0"
 	},
 	"peerDependencies": {
-		"@angular/core": "2.0.0-rc.3"
+		"@angular/core": "2.0.0-rc.4"
 	},
 	"devDependencies": {
-		"@angular/common": "2.0.0-rc.3",
-		"@angular/compiler": "2.0.0-rc.3",
-		"@angular/core": "2.0.0-rc.3",
-		"@angular/platform-browser": "2.0.0-rc.3",
-		"@angular/platform-browser-dynamic": "2.0.0-rc.3",
+		"@angular/common": "2.0.0-rc.4",
+		"@angular/compiler": "2.0.0-rc.4",
+		"@angular/core": "2.0.0-rc.4",
+		"@angular/platform-browser": "2.0.0-rc.4",
+		"@angular/platform-browser-dynamic": "2.0.0-rc.4",
 		"browser-sync": "2.13.x",
 		"codelyzer": "0.0.x",
 		"core-js": "2.4.x",
