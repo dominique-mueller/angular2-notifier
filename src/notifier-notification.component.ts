@@ -8,7 +8,7 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Optional, Ou
  */
 import { NotifierNotification } from './notifier-notification.model';
 import { NotifierOptions } from './notifier-options.model';
-import { NotifierAnimationService, NotifierAnimationPreset } from './notifier-animations.service';
+import { NotifierAnimationService, NotifierAnimation } from './notifier-animations.service';
 import { NotifierTimerService } from './notifier-timer.service';
 
 /**
@@ -132,12 +132,8 @@ export class NotifierNotificationComponent implements AfterViewInit {
 		if ( this.options.animations.enabled ) {
 
 			// Get our animation preset
-			const animationPreset: NotifierAnimationPreset = this.notifierAnimationService.getAnimationPreset(
-				this.options.animations.show.method,
-				'in',
-				this.options.animations.show.duration,
-				this.options.animations.show.easing
-			);
+			const animationPreset: NotifierAnimation = this.notifierAnimationService.getAnimation(
+				this.options.animations.show.method, 'in' );
 
 			// Prepare element for animation before making it visible (in order to preven flickering)
 			for ( let key in animationPreset.keyframes[ 0 ] ) {
@@ -178,12 +174,8 @@ export class NotifierNotificationComponent implements AfterViewInit {
 		if ( this.options.animations.enabled ) {
 
 			// Get our animation preset
-			const animationPreset: NotifierAnimationPreset = this.notifierAnimationService.getAnimationPreset(
-				this.options.animations.hide.method,
-				'out',
-				this.options.animations.hide.duration,
-				this.options.animations.hide.easing
-			);
+			const animationPreset: NotifierAnimation = this.notifierAnimationService.getAnimation(
+				this.options.animations.hide.method, 'out' );
 
 			// Finally, let's animate the bastard in (and return a fancy finished promise)
 			return this.element.animate( animationPreset.keyframes, animationPreset.options ).finished;

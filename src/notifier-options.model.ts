@@ -82,7 +82,7 @@ export class NotifierOptions { // TODO: Global & local ones
 			show: {
 				duration: 300,
 				easing: 'ease',
-				method: 'fade'
+				method: 'slide'
 			}
 		},
 		behaviour: {

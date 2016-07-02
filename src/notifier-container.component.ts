@@ -62,6 +62,13 @@ export class NotifierContainerComponent {
 
 	}
 
+	/**
+	 * Add notification
+	 */
+	public addNotification( notification: NotifierNotification ): void {
+		this.notifications.push( notification );
+	}
+
 	// TODO - Document height?
 	private onCreated( notificationComponent: NotifierNotificationComponent ): void {
 
@@ -171,10 +178,6 @@ export class NotifierContainerComponent {
 		return this.notifications.findIndex( ( notification: NotifierNotification ) => {
 			return notification.component === notificationComponent;
 		} );
-	}
-
-	public addNotification( notification: NotifierNotification ): void {
-		this.notifications.push( notification );
 	}
 
 }

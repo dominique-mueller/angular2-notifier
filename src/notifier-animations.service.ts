@@ -1,7 +1,12 @@
 /**
  * External imports
  */
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
+
+/**
+ * Internal imports
+ */
+import { NotifierOptions } from './notifier-options.model';
 
 /**
  * Notifier animation service
@@ -10,38 +15,47 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class NotifierAnimationService {
 
-	private animationPresets: any;
+	/**
+	 * Notifier options
+	 */
+	private options: NotifierOptions;
 
-	constructor() {
-		this.animationPresets = {
-
-			fade: {
-				in: {
-					from: {
-						opacity: 0
-					},
-					to: {
-						opacity: 1
-					}
-				},
-				out: {
-					from: {
-						opacity: 1
-					},
-					to: {
-						opacity: 0
-					}
-				}
-			}
-
+	/**
+	 * Animation presets
+	 */
+	private animationPresets: {
+		[ method: string ]: {
+			[ way: string ]: ( options: NotifierOptions ) => NotifierAnimationPreset
 		};
+	};
+
+	/**
+	 * Constructor
+	 */
+	constructor( @Optional() notifierOptions: NotifierOptions ) {
+		this.options = notifierOptions === null ? new NotifierOptions() : notifierOptions;
+		this.setupAnimationPresets();
 	}
 
-	public getAnimationPreset( name: string, way: string, duration: number, easing: string ): NotifierAnimationPreset {
+	/**
+	 * Get animation
+	 */
+	public getAnimation( name: string, way: string ): NotifierAnimation {
+
+		// Get all necessary animation values
+		const keyframes: NotifierAnimationPreset = this.animationPresets[ name ][ way ]( this.options );
+		const duration: number = ( way === 'in' )
+			? this.options.animations.show.duration
+			: this.options.animations.hide.duration;
+		const easing: string = ( way === 'in' )
+			? this.options.animations.show.easing
+			: this.options.animations.hide.easing;
+
+		// Build animation
 		return {
 			keyframes: [
-				this.animationPresets[ name ][ way ].from,
-				this.animationPresets[ name ][ way ].to
+				keyframes.from,
+				keyframes.to
 			],
 			options: {
 				delay: 10, // Give the browser some lunch time ...
@@ -50,14 +64,156 @@ export class NotifierAnimationService {
 				fill: 'forwards' // Keep the new state after the animation finished
 			}
 		};
+
 	}
+
+	/**
+	 * Initial animation preset setup
+	 */
+	private setupAnimationPresets(): void {
+
+		// Setup animation presets
+		this.animationPresets = {
+
+			fade: {
+
+				in: ( options: NotifierOptions ): NotifierAnimationPreset => {
+					return {
+						from: {
+							opacity: 0
+						},
+						to: {
+							opacity: 1
+						}
+					};
+				},
+
+				out: ( options: NotifierOptions ): NotifierAnimationPreset => {
+					return {
+						from: {
+							opacity: 1
+						},
+						to: {
+							opacity: 0
+						}
+					};
+				}
+
+			},
+
+			slide: {
+
+				in: ( options: NotifierOptions ): NotifierAnimationPreset => {
+					let animationStart: Object;
+					let animationEnd: Object;
+					switch ( options.position.horizontal.position ) {
+						case 'left':
+							let leftPosition: string =
+								`calc( -100% - ${ options.position.horizontal.distance }px - 10px )`;
+							animationStart = {
+								transform: `translate3d( ${ leftPosition }, 0, 0 )`
+							};
+							animationEnd = {
+								transform: 'translate3d( 0, 0, 0 )'
+							};
+							break;
+						case 'middle':
+							let middlePosition: string;
+							switch ( options.position.vertical.position ) {
+								case 'top':
+									middlePosition =
+										`calc( -100% - ${ options.position.horizontal.distance }px - 10px )`;
+									break;
+								case 'bottom':
+									middlePosition =
+										`calc( 100% + ${ options.position.horizontal.distance }px + 10px )`;
+									break;
+							}
+							animationStart = {
+								transform: `translate3d( -50%, ${ middlePosition }, 0 )`
+							};
+							animationEnd = {
+								transform: 'translate3d( -50%, 0, 0 )'
+							};
+							break;
+						case 'right':
+							let rightPosition: string =
+								`calc( 100% + ${ options.position.horizontal.distance }px + 10px )`;
+							animationStart = {
+								transform: `translate3d( ${ leftPosition }, 0, 0 )`
+							};
+							animationEnd = {
+								transform: 'translate3d( 0, 0, 0 )'
+							};
+							break;
+					}
+					return {
+						from: animationStart,
+						to: animationEnd
+					};
+				},
+
+				out: ( options: NotifierOptions ): NotifierAnimationPreset => {
+					let animationStart: Object;
+					let animationEnd: Object;
+					switch ( options.position.horizontal.position ) {
+						case 'left':
+							let leftPosition: string =
+								`calc( -100% - ${ options.position.horizontal.distance }px - 10px )`;
+							animationStart = {
+								transform: 'translate3d( 0, 0, 0 )'
+							};
+							animationEnd = {
+								transform: `translate3d( ${ leftPosition }, 0, 0 )`
+							};
+							break;
+						case 'middle':
+							let middlePosition: string;
+							switch ( options.position.vertical.position ) {
+								case 'top':
+									middlePosition =
+										`calc( -100% - ${ options.position.horizontal.distance }px - 10px )`;
+									break;
+								case 'bottom':
+									middlePosition =
+										`calc( 100% + ${ options.position.horizontal.distance }px + 10px )`;
+									break;
+							}
+							animationStart = {
+								transform: 'translate3d( -50%, 0, 0 )'
+							};
+							animationEnd = {
+								transform: `translate3d( -50%, ${ middlePosition }, 0 )`
+							};
+							break;
+						case 'right':
+							let rightPosition: string =
+								`calc( 100% + ${ options.position.horizontal.distance }px + 10px )`;
+							animationStart = {
+								transform: 'translate3d( 0, 0, 0 )'
+							};
+							animationEnd = {
+								transform: `translate3d( ${ leftPosition }, 0, 0 )`
+							};
+							break;
+					}
+					return {
+						from: animationStart,
+						to: animationEnd
+					};
+				}
+
+			}
+
+		};
+	};
 
 }
 
 /**
- * Notifier animation preset
+ * Notifier animation
  */
-export interface NotifierAnimationPreset {
+export interface NotifierAnimation {
 	keyframes: Array<any>;
 	options: {
 		delay: number;
@@ -65,4 +221,12 @@ export interface NotifierAnimationPreset {
 		easing: string;
 		fill: string;
 	};
+}
+
+/**
+ * Notifier animation preset
+ */
+export interface NotifierAnimationPreset {
+	from: Object;
+	to: Object;
 }
