@@ -10,6 +10,7 @@ import { DOCUMENT } from '@angular/platform-browser';
 import { NotifierNotification } from './notifier-notification.model';
 import { NotifierOptions } from './notifier-options.model';
 import { NotifierNotificationComponent } from './notifier-notification.component';
+import { NotifierAnimationService } from './notifier-animations.service';
 
 /**
  * Notifier container component
@@ -22,6 +23,9 @@ import { NotifierNotificationComponent } from './notifier-notification.component
 	host: {
 		class: 'x-notifier__container'
 	},
+	providers: [
+		NotifierAnimationService
+	],
 	selector: 'x-notifier-container',
 	template: `
 		<ul class="x-notifier__container-list">
@@ -74,16 +78,18 @@ export class NotifierContainerComponent {
 		if ( this.notifications.length > 1 ) {
 
 			// Shift all notifications (except the latest one)
-			let animations: Array<Promise<any>> = [];
 			for ( let i: number = this.notifications.length - 2; i >= 0; i-- ) {
-				animations.push( this.notifications[ i ].component.animateShift( notificationComponent.getHeight() ) );
+				this.notifications[ i ].component.shift( notificationComponent.getHeight(), true );
 			}
-			Promise.all( animations ).then( () => {
-				notificationComponent.animateIn();
-			} );
+			setTimeout(
+				() => {
+					notificationComponent.show();
+				},
+				Math.round( this.options.animations.show.duration / 5 )
+			);
 
 		} else {
-			notificationComponent.animateIn();
+			notificationComponent.show();
 		}
 
 	}
@@ -94,27 +100,32 @@ export class NotifierContainerComponent {
 		// Check if this is the first notification (and therefore if shifting is even necessary)
 		if ( this.notifications.length > 1 ) {
 
-			notificationComponent.animateOut().then( () => {
-
-				// Find index of the notification that should be removed
-				let index: number = this.notifications.findIndex( ( notification: NotifierNotification ) => {
-					return notification.component === notificationComponent;
-				} );
-
-				// Shift all notifications below / above the current one
-				for ( let i: number = index; i >= 0; i-- ) {
-					this.notifications[ i ].component.animateShift( -notificationComponent.getHeight() );
-				}
-
+			notificationComponent.hide().then( () => {
 				this.notifications = this.notifications.filter( ( notification: NotifierNotification ) => { // TODO: Extract me into function
 					return notification.component !== notificationComponent;
 				} );
-
 			} );
+
+			setTimeout(
+				() => {
+
+					// Find index of the notification that should be removed
+					let index: number = this.notifications.findIndex( ( notification: NotifierNotification ) => {
+						return notification.component === notificationComponent;
+					} );
+
+					// Shift all notifications below / above the current one
+					for ( let i: number = index; i >= 0; i-- ) {
+						this.notifications[ i ].component.shift( notificationComponent.getHeight(), false );
+					}
+
+				},
+				Math.round( this.options.animations.show.duration / 5 )
+			);
 
 		} else {
 
-			notificationComponent.animateOut().then( () => {
+			notificationComponent.hide().then( () => {
 				this.notifications = this.notifications.filter( ( notification: NotifierNotification ) => { // TODO: Extract me into function
 					return notification.component !== notificationComponent;
 				} );

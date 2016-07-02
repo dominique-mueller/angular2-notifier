@@ -9,10 +9,8 @@ import { NotifierService, NotifierOptions, provideNotifierOptions } from '../';
  */
 @Component( {
 	providers: [
-		NotifierService,
-		provideNotifierOptions( {
-			position: 'left-top'
-		} )
+		NotifierService
+		// provideNotifierOptions()
 	],
 	selector: 'x-app',
 	templateUrl: './app.component.html'
