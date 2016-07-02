@@ -20,7 +20,7 @@ import { NotifierTimerService } from './notifier-timer.service';
 		'[class]': 'customClasses',
 		'(mouseover)': 'onMouseover()',
 		'(mouseout)': 'onMouseout()',
-		'(click)': 'onClick()' // TODO: Remove / replace me
+		'(click)': 'onClick()'
 	},
 	providers: [
 		NotifierTimerService // Providing the service here allows us to use one timer service per notification
@@ -80,26 +80,15 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	 */
 	private customClasses: string;
 
-
-
-
-	// TODO
+	/**
+	 * Internal: Current (calculated) height (#perfmatters)
+	 */
 	private currentHeight: number;
 
-	// TODO
+	/**
+	 * Internal: Current shift position (#perfmatters)
+	 */
 	private currentShift: number;
-
-
-
-
-
-
-	// TODO
-	private timerId: number;
-
-
-
-
 
 	/**
 	 * Constructor - TODO
@@ -121,7 +110,6 @@ export class NotifierNotificationComponent implements AfterViewInit {
 		this.dismiss = new EventEmitter<NotifierNotificationComponent>();
 		this.currentHeight = 0;
 		this.currentShift = 0;
-		this.timerId = null;
 
 		// Set and use options
 		this.options = notifierOptions === null ? new NotifierOptions() : notifierOptions;

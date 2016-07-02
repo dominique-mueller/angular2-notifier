@@ -2,7 +2,7 @@
  * External imports
  */
 import { Component, Optional, Inject } from '@angular/core';
-import { DOCUMENT } from '@angular/platform-browser';
+// import { DOCUMENT } from '@angular/platform-browser';
 
 /**
  * Internal imports
@@ -31,9 +31,7 @@ import { NotifierAnimationService } from './notifier-animations.service';
 		<ul class="x-notifier__container-list">
 			<li *ngFor="let notification of notifications">
 				<x-notifier-notification
-					[notification]="notification"
-					(created)="onCreated( $event )"
-					(dismiss)="onDismiss( $event )">
+					[notification]="notification" (created)="onCreated( $event )" (dismiss)="onDismiss( $event )">
 				</x-notifier-notification>
 			</li>
 		</ul>
@@ -54,39 +52,66 @@ export class NotifierContainerComponent {
 	/**
 	 * Constructor - TODO
 	 */
-	constructor( @Optional() notifierOptions: NotifierOptions, @Inject( DOCUMENT ) doc: any ) {
+	constructor( @Optional() notifierOptions: NotifierOptions ) {
+
+		// Setup
+		this.notifications = [];
 
 		// Use custom notifier options if present
 		this.options = notifierOptions === null ? new NotifierOptions() : notifierOptions;
 
-		// Setup empty list of notifications
-		this.notifications = [];
-
-		// TODO: Save doc height for later?
-		// console.log('++++');
-		// console.log(doc);
-
 	}
 
-	// TODO
+	// TODO - Split even more?? Document height?
 	private onCreated( notificationComponent: NotifierNotificationComponent ): void {
 
-		// Set notification component reference
+		// Save our notification component reference
 		this.notifications[ this.notifications.length - 1 ].component = notificationComponent;
 
-		// Check if this is the first notification (and therefore if shifting is even necessary)
+		// Decision: First notification?
 		if ( this.notifications.length > 1 ) {
 
-			// Shift all notifications (except the latest one)
-			for ( let i: number = this.notifications.length - 2; i >= 0; i-- ) {
-				this.notifications[ i ].component.shift( notificationComponent.getHeight(), true );
-			}
-			setTimeout(
-				() => {
+			// Decision: Stacking enabled?
+			if ( this.options.behaviour.stacking === false ) {
+
+				// Hide the oldest notification, then show the new one
+				this.dismissNotification( this.notifications[ 0 ].component ).then( () => {
 					notificationComponent.show();
-				},
-				Math.round( this.options.animations.show.duration / 5 )
-			);
+				} );
+
+			} else {
+
+				// Decision: Too many notifications opened?
+				if ( this.notifications.length > this.options.behaviour.stacking ) {
+
+					// Hide the oldest notification
+					this.dismissNotification( this.notifications[ 0 ].component );
+
+					// Shift all notifications to make some place (except the latest / last one)
+					setTimeout( () => { // Animation overlap
+						this.shiftNotifications( this.notifications.slice( 1, this.notifications.length - 1 ),
+							notificationComponent.getHeight(), true );
+					}, Math.round( this.options.animations.show.duration / 5 ) );
+
+					// Show the new notification
+					setTimeout( () => { // Animation overlap
+						notificationComponent.show();
+					}, Math.round( this.options.animations.show.duration / 2.5 ) );
+
+				} else {
+
+					// Shift all notifications to make enough place (except the latest / last one)
+					this.shiftNotifications( this.notifications.slice( 0, this.notifications.length - 1 ),
+						notificationComponent.getHeight(), true );
+
+					// Show the new notification
+					setTimeout( () => { // Animation overlap
+						notificationComponent.show();
+					}, Math.round( this.options.animations.show.duration / 5 ) );
+
+				}
+
+			}
 
 		} else {
 			notificationComponent.show();
@@ -97,51 +122,59 @@ export class NotifierContainerComponent {
 	// TODO
 	private onDismiss( notificationComponent: NotifierNotificationComponent ): void {
 
-		// Check if this is the first notification (and therefore if shifting is even necessary)
+		// Decision: Only one notification here?
 		if ( this.notifications.length > 1 ) {
 
-			notificationComponent.hide().then( () => {
-				this.notifications = this.notifications.filter( ( notification: NotifierNotification ) => { // TODO: Extract me into function
-					return notification.component !== notificationComponent;
-				} );
-			} );
+			// Dismiss the notification
+			this.dismissNotification( notificationComponent );
 
-			setTimeout(
-				() => {
-
-					// Find index of the notification that should be removed
-					let index: number = this.notifications.findIndex( ( notification: NotifierNotification ) => {
-						return notification.component === notificationComponent;
-					} );
-
-					// Shift all notifications below / above the current one
-					for ( let i: number = index; i >= 0; i-- ) {
-						this.notifications[ i ].component.shift( notificationComponent.getHeight(), false );
-					}
-
-				},
-				Math.round( this.options.animations.show.duration / 5 )
-			);
+			// Shift all notifications (above / below the index) to remove the gap
+			setTimeout( () => { // Animation overlap
+				let index: number = this.findNotificationIndexByComponent( notificationComponent );
+				this.shiftNotifications( this.notifications.slice( 0, index ),
+					notificationComponent.getHeight(), false );
+			}, Math.round( this.options.animations.show.duration / 5 ) );
 
 		} else {
-
-			notificationComponent.hide().then( () => {
-				this.notifications = this.notifications.filter( ( notification: NotifierNotification ) => { // TODO: Extract me into function
-					return notification.component !== notificationComponent;
-				} );
-			} );
-
+			this.dismissNotification( notificationComponent );
 		}
 
 	}
 
-	public addNotification( notification: NotifierNotification ): void {
-		this.notifications.push( notification );
+	/**
+	 * Dismiss one notificaiton
+	 */
+	private dismissNotification( notificationComponent: NotifierNotificationComponent ): Promise<any> {
+		return new Promise<any>( ( resolve: Function, reject: Function ) => {
+			notificationComponent.hide().then( () => {
+				this.notifications = this.notifications.filter( ( currentNotification: NotifierNotification ) => {
+					return currentNotification.component !== notificationComponent;
+				} );
+				resolve();
+			} );
+		} );
 	}
 
-	public removeNotification(): void {
-		// this.notifications.pop();
-		console.log( this.notifications[ 0 ] === this.notifications[ 1 ] );
+	/**
+	 * Shift multiple notifications
+	 */
+	private shiftNotifications( notifications: Array<NotifierNotification>, value: number, toMakePlace: boolean ): void {
+		for ( let notification of notifications ) {
+			notification.component.shift( value, toMakePlace );
+		}
+	}
+
+	/**
+	 * Find a notification and return its index
+	 */
+	private findNotificationIndexByComponent( notificationComponent: NotifierNotificationComponent ): number {
+		return this.notifications.findIndex( ( notification: NotifierNotification ) => {
+			return notification.component === notificationComponent;
+		} );
+	}
+
+	public addNotification( notification: NotifierNotification ): void {
+		this.notifications.push( notification );
 	}
 
 }

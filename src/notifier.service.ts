@@ -23,7 +23,7 @@ export class NotifierService {
 	/**
 	 * Reference to the notifier container component
 	 */
-	private notifierContainerRef: ComponentRef<NotifierContainerComponent>;
+	private notifierContainer: NotifierContainerComponent;
 
 	/**
 	 * Constructor
@@ -33,16 +33,11 @@ export class NotifierService {
 	constructor( applicationRef: ApplicationRef, componentResolver: ComponentResolver,
 		@Optional() notifierOptions: NotifierOptions ) {
 
-		console.log( '### Creating the notifier service ...' ); // TODO
-
-
 		// notifierOptions === null when they are not provided explicetely
 		// TODO: Save custom options
 
-		console.log('####');
-		console.log(notifierOptions);
-
-
+		console.log( '### NOTIFIER OPTIONS' );
+		console.log( notifierOptions );
 
 
 		// Dynamically add our notifier container into the document, after app bootstrap finished
@@ -57,24 +52,24 @@ export class NotifierService {
 			componentResolver
 				.resolveComponent( NotifierContainerComponent )
 				.then( ( componentFactory: ComponentFactory<NotifierContainerComponent> ) => {
-					this.notifierContainerRef = rootComponent.createComponent<NotifierContainerComponent>
-						( componentFactory, rootComponent.length, rootComponent.parentInjector );
+					this.notifierContainer = rootComponent .createComponent<NotifierContainerComponent>(
+						componentFactory, rootComponent.length, rootComponent.parentInjector ).instance;
 				} );
 
 		} );
 
 	}
 
-	// TODO: TEST
-	public info( message: string ) {
-		console.log( 'Info notification requested ...' ); // TODO
-		const notification = new NotifierNotification( 'info', message );
-		this.notifierContainerRef.instance.addNotification( notification );
+	public notify( type: string, message: string, options?: Object ): void { // TODO: Options type
+		this.notifierContainer.addNotification( new NotifierNotification( type, message ) );
 	}
 
-	public remove(): void {
-		this.notifierContainerRef.instance.removeNotification();
-	}
+	// TODO: TEST
+	// public info( message: string ) {
+	// 	console.log( 'Info notification requested ...' ); // TODO
+	// 	const notification = new NotifierNotification( 'info', message );
+	// 	this.notifierContainer.addNotification( notification );
+	// }
 
 	// TODO: Global event listeners as Observables
 

@@ -30,9 +30,6 @@ export class NotifierOptions { // TODO: Global & local ones
 	 */
 	public theme: string; // STABLE
 
-
-
-
 	/**
 	 * Behaviour
 	 */
@@ -41,17 +38,13 @@ export class NotifierOptions { // TODO: Global & local ones
 		pauseOnMouseover: boolean;
 		resetOnMouseover: boolean;
 		dismissOnClick: boolean;
+		stacking: number|boolean;
 	};
 
 	/**
 	 * Show dismiss buttontton (showing an 'X'), which dismissed the notification when being clicked.
 	 */
 	// public showDismissButton: boolean;
-
-	/**
-	 * Stacking
-	 */
-	// public stacking: boolean|number;
 
 
 	public animations: {
@@ -98,7 +91,8 @@ export class NotifierOptions { // TODO: Global & local ones
 			autoHide: 5000,
 			dismissOnClick: true,
 			pauseOnMouseover: true,
-			resetOnMouseover: false
+			resetOnMouseover: false,
+			stacking: 4
 		},
 		position: {
 			gap: 8,

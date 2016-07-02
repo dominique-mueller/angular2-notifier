@@ -33,12 +33,12 @@ export class AppComponent {
 	}
 
 	private test(): void {
-		this.notifier.info( 'This is notification #' + this.index );
+		this.notifier.notify( 'info', 'This is notification #' + this.index );
 		this.index++;
 	}
 
-	private test2(): void {
-		this.notifier.remove();
-	}
+	// private test2(): void {
+	// 	this.notifier.remove();
+	// }
 
 }
