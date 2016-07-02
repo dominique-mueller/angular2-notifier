@@ -34,9 +34,14 @@ export class NotifierOptions { // TODO: Global & local ones
 
 
 	/**
-	 * Auto hide (= timeout)
+	 * Behaviour
 	 */
-	// public autoHide: boolean|number;
+	public behaviour: {
+		autoHide: number|boolean;
+		pauseOnMouseover: boolean;
+		resetOnMouseover: boolean;
+		dismissOnClick: boolean;
+	};
 
 	/**
 	 * Show dismiss buttontton (showing an 'X'), which dismissed the notification when being clicked.
@@ -47,11 +52,6 @@ export class NotifierOptions { // TODO: Global & local ones
 	 * Stacking
 	 */
 	// public stacking: boolean|number;
-
-	/**
-	 * On Mouseover
-	 */
-	// public onMouseover: boolean|string;
 
 
 	public animations: {
@@ -94,6 +94,12 @@ export class NotifierOptions { // TODO: Global & local ones
 				method: 'fade'
 			}
 		},
+		behaviour: {
+			autoHide: 5000,
+			dismissOnClick: true,
+			pauseOnMouseover: true,
+			resetOnMouseover: false
+		},
 		position: {
 			gap: 8,
 			horizontal: {
@@ -104,7 +110,7 @@ export class NotifierOptions { // TODO: Global & local ones
 				distance: 12,
 				position: 'bottom'
 			}
-		};
+		},
 		theme: 'material'
 	} ) {
 		Object.assign( this, options ); // Merge

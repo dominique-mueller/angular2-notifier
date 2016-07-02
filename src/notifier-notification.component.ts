@@ -9,6 +9,7 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Optional, Ou
 import { NotifierNotification } from './notifier-notification.model';
 import { NotifierOptions } from './notifier-options.model';
 import { NotifierAnimationService, NotifierAnimationPreset } from './notifier-animations.service';
+import { NotifierTimerService } from './notifier-timer.service';
 
 /**
  * Notifier notification component
@@ -17,8 +18,13 @@ import { NotifierAnimationService, NotifierAnimationPreset } from './notifier-an
 @Component( {
 	host: {
 		'[class]': 'customClasses',
-		'(click)': 'onDismiss()' // TODO: Remove / replace me
+		'(mouseover)': 'onMouseover()',
+		'(mouseout)': 'onMouseout()',
+		'(click)': 'onClick()' // TODO: Remove / replace me
 	},
+	providers: [
+		NotifierTimerService // Providing the service here allows us to use one timer service per notification
+	],
 	selector: 'x-notifier-notification',
 	template: `
 		{{ notification.type }}: {{ notification.message }}
@@ -53,6 +59,11 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	 * Internal: Notifier animation service reference
 	 */
 	private notifierAnimationService: NotifierAnimationService;
+
+	/**
+	 * Internal: Notifier timer service reference
+	 */
+	private notifierTimerService: NotifierTimerService;
 
 	/**
 	 * Internal: Notifier options
@@ -95,6 +106,7 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	 */
 	constructor(
 		notifierAnimationService: NotifierAnimationService,
+		notifierTimerService: NotifierTimerService,
 		renderer: Renderer,
 		elementRef: ElementRef,
 		@Optional() notifierOptions: NotifierOptions
@@ -102,6 +114,7 @@ export class NotifierNotificationComponent implements AfterViewInit {
 
 		// Setup
 		this.notifierAnimationService = notifierAnimationService;
+		this.notifierTimerService = notifierTimerService;
 		this.renderer = renderer;
 		this.element = elementRef.nativeElement;
 		this.created = new EventEmitter<NotifierNotificationComponent>();
@@ -160,22 +173,6 @@ export class NotifierNotificationComponent implements AfterViewInit {
 		return this.currentHeight;
 	}
 
-	// TODO: Extract into own file, as Countdown class
-	// private startTimer(): void {
-	// 	// this.timerId = setTimeout(
-	// 	// 	() => {
-	// 	// 		this.dismiss.emit( this );
-	// 	// 	},
-	// 	// 	this.options.autoHide
-	// 	// );
-	// }
-
-	// TODO
-	public onDismiss(): void {
-		clearTimeout( this.timerId );
-		this.dismiss.emit( this );
-	}
-
 	/**
 	 * Animate this notification component in
 	 */
@@ -198,14 +195,23 @@ export class NotifierNotificationComponent implements AfterViewInit {
 			}
 			this.renderer.setElementStyle( this.element, 'visibility', 'visible' );
 
+			// Start timer
+			this.runTimer();
+
 			// Finally, let's animate the bastard in (and return a fancy finished promise)
 			return this.element.animate( animationPreset.keyframes, animationPreset.options ).finished;
 
 		} else {
+
+			// Start timer
+			this.runTimer();
+
+			// Move the bastard in
 			this.renderer.setElementStyle( this.element, 'visibility', 'visible' );
 			return new Promise<any>( ( resolve: Function, reject: Function ) => {
 				resolve( null );
 			} );
+
 		}
 
 	}
@@ -214,6 +220,9 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	 * Animate this notification component out
 	 */
 	public hide(): Promise<any> {
+
+		// Stop the timer
+		this.stopTimer();
 
 		// First, check if animations are enabled
 		if ( this.options.animations.enabled ) {
@@ -294,6 +303,65 @@ export class NotifierNotificationComponent implements AfterViewInit {
 			} );
 		}
 
+	}
+
+	/**
+	 * Call this function when we click on the notification
+	 */
+	private onClick(): void {
+		if ( this.options.behaviour.dismissOnClick ) {
+			this.stopTimer();
+			this.dismiss.emit( this ); // Time is up
+		}
+	}
+
+	/**
+	 * Call this function when we hover over the notification area
+	 */
+	private onMouseover(): void {
+		if ( this.options.behaviour.pauseOnMouseover ) {
+			this.pauseTimer();
+		} else if ( this.options.behaviour.resetOnMouseover ) {
+			this.stopTimer();
+		}
+	}
+
+	/**
+	 * Call this function when we no longer hover over the notification area
+	 */
+	private onMouseout(): void {
+		if ( this.options.behaviour.pauseOnMouseover || this.options.behaviour.resetOnMouseover ) {
+			this.runTimer();
+		}
+	}
+
+	/**
+	 * Start the auto hide timer
+	 */
+	private runTimer(): void {
+		if ( this.options.behaviour.autoHide !== false && this.options.behaviour.autoHide > 0 ) {
+			this.notifierTimerService.run( <number> this.options.behaviour.autoHide, () => {
+				this.dismiss.emit( this ); // Time is up
+			} );
+		}
+	}
+
+	/**
+	 * Pause the auto hide timer
+	 */
+	private pauseTimer(): void {
+		if ( this.options.behaviour.autoHide !== false && this.options.behaviour.autoHide > 0 ) {
+			this.notifierTimerService.pause();
+		}
+	}
+
+	/**
+	 * Stop the auto hdie timer
+	 */
+	private stopTimer(): void {
+		if ( this.options.behaviour.autoHide !== false && this.options.behaviour.autoHide > 0 ) {
+			this.notifierTimerService.stop();
+		}
 	}
 
 }
