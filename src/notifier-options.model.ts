@@ -39,14 +39,12 @@ export class NotifierOptions { // TODO: Global & local ones
 		resetOnMouseover: boolean;
 		dismissOnClick: boolean;
 		stacking: number|boolean;
+		showDismissButton: boolean;
 	};
 
 	/**
-	 * Show dismiss buttontton (showing an 'X'), which dismissed the notification when being clicked.
+	 * Animations
 	 */
-	// public showDismissButton: boolean;
-
-
 	public animations: {
 		enabled: boolean;
 		hide: {
@@ -89,13 +87,13 @@ export class NotifierOptions { // TODO: Global & local ones
 		},
 		behaviour: {
 			autoHide: 5000,
-			dismissOnClick: true,
 			pauseOnMouseover: true,
 			resetOnMouseover: false,
+			showDismissButton: true,
 			stacking: 4
 		},
 		position: {
-			gap: 8,
+			gap: 10,
 			horizontal: {
 				distance: 12,
 				position: 'left'

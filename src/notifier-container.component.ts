@@ -62,7 +62,7 @@ export class NotifierContainerComponent {
 
 	}
 
-	// TODO - Split even more?? Document height?
+	// TODO - Document height?
 	private onCreated( notificationComponent: NotifierNotificationComponent ): void {
 
 		// Save our notification component reference

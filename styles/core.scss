@@ -3,7 +3,11 @@
 // Container
 
 .x-notifier__container {
-	// display: block;
+
+	* {
+		box-sizing: border-box;
+	}
+
 }
 
 .x-notifier__container-list {
@@ -24,4 +28,5 @@
 	// Scrolling performance matters!
 	// See details at <https://benfrain.com/improving-css-performance-fixed-position-elements/>
 	backface-visibility: hidden;
+
 }

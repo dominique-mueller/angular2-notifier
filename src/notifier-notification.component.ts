@@ -17,17 +17,21 @@ import { NotifierTimerService } from './notifier-timer.service';
  */
 @Component( {
 	host: {
-		'[class]': 'customClasses',
 		'(mouseover)': 'onMouseover()',
-		'(mouseout)': 'onMouseout()',
-		'(click)': 'onClick()'
+		'(mouseout)': 'onMouseout()'
 	},
 	providers: [
 		NotifierTimerService // Providing the service here allows us to use one timer service per notification
 	],
 	selector: 'x-notifier-notification',
 	template: `
-		{{ notification.type }}: {{ notification.message }}
+		<p class="x-notifier__notification-message">{{ notification.message }}</p>
+		<button class="x-notifier__notification-button" type="button" title="dismiss"
+			*ngIf="options.behaviour.showDismissButton" (click)="onDismiss()">
+			<svg class="x-notifier__notification-dismiss" viewBox="0 0 24 24" width="20" height="20">
+				<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+			</svg>
+		</button>
 		`
 } )
 export class NotifierNotificationComponent implements AfterViewInit {
@@ -76,11 +80,6 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	private element: any; // It's kind of a 'HTMLElement' ... but ... no one knows for sure ...
 
 	/**
-	 * Internal: List of (custom) class names, actually never changes
-	 */
-	private customClasses: string;
-
-	/**
 	 * Internal: Current (calculated) height (#perfmatters)
 	 */
 	private currentHeight: number;
@@ -93,13 +92,8 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	/**
 	 * Constructor - TODO
 	 */
-	constructor(
-		notifierAnimationService: NotifierAnimationService,
-		notifierTimerService: NotifierTimerService,
-		renderer: Renderer,
-		elementRef: ElementRef,
-		@Optional() notifierOptions: NotifierOptions
-	) {
+	constructor( notifierAnimationService: NotifierAnimationService, notifierTimerService: NotifierTimerService,
+		renderer: Renderer, elementRef: ElementRef, @Optional() notifierOptions: NotifierOptions ) {
 
 		// Setup
 		this.notifierAnimationService = notifierAnimationService;
@@ -113,7 +107,6 @@ export class NotifierNotificationComponent implements AfterViewInit {
 
 		// Set and use options
 		this.options = notifierOptions === null ? new NotifierOptions() : notifierOptions;
-		this.customClasses = `x-notifier__notification x-notifier__notification--${ this.options.theme }`;
 
 	}
 
@@ -123,38 +116,7 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	public ngAfterViewInit(): void {
 		this.setup();
 		this.currentHeight = this.element.offsetHeight; // Save current height, for later (#perfmatters)
-		this.created.emit( this ); // We're done with the setup
-	}
-
-	/**
-	 * Setup notification
-	 */
-	private setup(): void {
-
-		// Set horizontal position
-		switch ( this.options.position.horizontal.position ) {
-			case 'left':
-				this.renderer.setElementStyle( this.element, 'left', `${ this.options.position.horizontal.distance }px` );
-				break;
-			case 'right':
-				this.renderer.setElementStyle( this.element, 'right', `${ this.options.position.horizontal.distance }px` );
-				break;
-			case 'middle':
-				this.renderer.setElementStyle( this.element, 'left', '50%' );
-				this.renderer.setElementStyle( this.element, 'transform', 'translate3d( -50%, 0, 0 )' );
-				break;
-		}
-
-		// Set vertical position
-		switch ( this.options.position.vertical.position ) {
-			case 'top':
-				this.renderer.setElementStyle( this.element, 'top', `${ this.options.position.vertical.distance }px` );
-				break;
-			case 'bottom':
-				this.renderer.setElementStyle( this.element, 'bottom', `${ this.options.position.vertical.distance }px` );
-				break;
-		}
-
+		this.created.emit( this ); // Setup is done
 	}
 
 	public getHeight(): number {
@@ -294,13 +256,51 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	}
 
 	/**
+	 * Setup notification
+	 */
+	private setup(): void {
+
+		// Set horizontal position
+		switch ( this.options.position.horizontal.position ) {
+			case 'left':
+				this.renderer.setElementStyle( this.element, 'left',
+					`${ this.options.position.horizontal.distance }px` );
+				break;
+			case 'right':
+				this.renderer.setElementStyle( this.element, 'right',
+					`${ this.options.position.horizontal.distance }px` );
+				break;
+			case 'middle':
+				this.renderer.setElementStyle( this.element, 'left', '50%' );
+				this.renderer.setElementStyle( this.element, 'transform', 'translate3d( -50%, 0, 0 )' );
+				break;
+		}
+
+		// Set vertical position
+		switch ( this.options.position.vertical.position ) {
+			case 'top':
+				this.renderer.setElementStyle( this.element, 'top',
+					`${ this.options.position.vertical.distance }px` );
+				break;
+			case 'bottom':
+				this.renderer.setElementStyle( this.element, 'bottom',
+					`${ this.options.position.vertical.distance }px` );
+				break;
+		}
+
+		// Set classes
+		this.renderer.setElementClass( this.element, 'x-notifier__notification', true );
+		this.renderer.setElementClass( this.element, `x-notifier__notification--${ this.notification.type }`, true );
+		this.renderer.setElementClass( this.element, `x-notifier__notification--${ this.options.theme }`, true );
+
+	}
+
+	/**
 	 * Call this function when we click on the notification
 	 */
-	private onClick(): void {
-		if ( this.options.behaviour.dismissOnClick ) {
-			this.stopTimer();
-			this.dismiss.emit( this ); // Time is up
-		}
+	private onDismiss( target: any ): void {
+		this.stopTimer();
+		this.dismiss.emit( this ); // Time is up
 	}
 
 	/**
