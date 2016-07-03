@@ -6,7 +6,7 @@ import { Provider } from '@angular/core';
 /**
  * Internal imports
  */
-import { NotifierOptions } from './notifier-options.model';
+import { NotifierOptions } from './models/notifier-options-global.model';
 
 /**
  * Provide custom notifier options - TODO

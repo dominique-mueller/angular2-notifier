@@ -9,9 +9,9 @@ import { ComponentRef_ } from '@angular/core/src/linker/component_factory';
 /**
  * Internal imports
  */
-import { NotifierNotification } from './notifier-notification.model';
-import { NotifierOptions } from './notifier-options.model';
-import { NotifierContainerComponent } from './notifier-container.component';
+import { NotifierNotification } from './../models/notifier-notification.model';
+import { NotifierOptions } from './../models/notifier-options-global.model';
+import { NotifierContainerComponent } from './../components/notifier-container.component';
 
 /**
  * Notifier service

@@ -6,10 +6,10 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Optional, Ou
 /**
  * Internal imports
  */
-import { NotifierNotification } from './notifier-notification.model';
-import { NotifierOptions } from './notifier-options.model';
-import { NotifierAnimationService, NotifierAnimation } from './notifier-animations.service';
-import { NotifierTimerService } from './notifier-timer.service';
+import { NotifierNotification } from './../models/notifier-notification.model';
+import { NotifierOptions } from './../models/notifier-options-global.model';
+import { NotifierAnimationService, NotifierAnimation } from './../services/notifier-animations.service';
+import { NotifierTimerService } from './../services/notifier-timer.service';
 
 /**
  * Notifier notification component

@@ -5,7 +5,6 @@ import { Injectable } from '@angular/core';
 
 /**
  * Notification options model
- * TODO: Description
  */
 @Injectable()
 export class NotifierOptions { // TODO: Global & local ones
@@ -87,6 +86,7 @@ export class NotifierOptions { // TODO: Global & local ones
 		},
 		behaviour: {
 			autoHide: 5000,
+			dismissOnClick: false,
 			pauseOnMouseover: true,
 			resetOnMouseover: false,
 			showDismissButton: true,

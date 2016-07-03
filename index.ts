@@ -1,7 +1,8 @@
 /**
  * Notifier barrel
+ * TODO: Decode what is internal and what's public API
  */
-export * from './src/notifier-notification.model';
-export * from './src/notifier-options.model';
-export * from './src/notifier.service';
-export * from './src/notifier.provider';
+export { NotifierNotification } from './src/models/notifier-notification.model';
+export { NotifierOptions } from './src/models/notifier-options-global.model';
+export { NotifierService } from './src/services/notifier.service';
+export { provideNotifierOptions } from './src/notifier.provider';

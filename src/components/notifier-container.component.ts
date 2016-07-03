@@ -7,10 +7,10 @@ import { Component, Optional, Inject } from '@angular/core';
 /**
  * Internal imports
  */
-import { NotifierNotification } from './notifier-notification.model';
-import { NotifierOptions } from './notifier-options.model';
+import { NotifierNotification } from './../models/notifier-notification.model';
+import { NotifierOptions } from './../models/notifier-options-global.model';
 import { NotifierNotificationComponent } from './notifier-notification.component';
-import { NotifierAnimationService } from './notifier-animations.service';
+import { NotifierAnimationService } from './../services/notifier-animations.service';
 
 /**
  * Notifier container component

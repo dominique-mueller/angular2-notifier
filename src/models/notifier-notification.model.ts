@@ -6,21 +6,21 @@ import { ElementRef } from '@angular/core';
 /**
  * Internal imports
  */
-import { NotifierNotificationComponent } from './notifier-notification.component';
+import { NotifierNotificationComponent } from './../components/notifier-notification.component';
 
 /**
  * Notification model
- * TODO: Description
  */
 export class NotifierNotification {
 
 	/**
-	 * Notification type, maps to class name - TODO: Details
+	 * Notification type, maps to class name
 	 */
 	public type: string;
 
 	/**
-	 * Notification message (string only for now) - TODO: HTML template?
+	 * Notification message (string only for now)
+	 * TODO: HTML templates?
 	 */
 	public message: string;
 
@@ -30,7 +30,7 @@ export class NotifierNotification {
 	public component: NotifierNotificationComponent;
 
 	/**
-	 * Constructor - TODO
+	 * Constructor
 	 */
 	constructor( type: string, message: string ) {
 		this.type = type;
