@@ -38,11 +38,10 @@ export class AppComponent {
 		this.notifier = notifier;
 	}
 
-	private test(): void {
+	private show(): void {
 		this.notifier.notify( 'info', 'This is notification #' + this.index ).then( () => {
 			console.log('>>> New notification added.');
 		} );
-		// this.notifier.notify( 'info', 'This is notification XXX' + this.index );
 		this.index++;
 	}
 

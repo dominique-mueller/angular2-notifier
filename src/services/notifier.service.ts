@@ -1,8 +1,7 @@
 /**
  * External imports
  */
-import { ApplicationRef, ComponentFactory, ComponentRef, ComponentMetadata, ComponentResolver, Component, Inject, Injectable, Optional,
-	ReflectiveInjector, ViewContainerRef } from '@angular/core';
+import { ApplicationRef, ComponentFactory, ComponentResolver, Injectable, ViewContainerRef } from '@angular/core';
 import { ViewContainerRef_ } from '@angular/core/src/linker/view_container_ref';
 import { ComponentRef_ } from '@angular/core/src/linker/component_factory';
 
@@ -54,62 +53,82 @@ export class NotifierService {
 	}
 
 	/**
-	 * General way to show a new notification
+	 * Show a notification (the general way)
+	 * @param  {string}       type    Notification type
+	 * @param  {string}       message Notification message
+	 * @return {Promise<any>}         Promise, resolved when finished
 	 */
 	public notify( type: string, message: string ): Promise<any> {
-		return this.notifierContainer.addNotification( new NotifierNotification( type, message ) );
+		return this.notifierContainer.doAction( {
+			type: 'SHOW',
+			payload: new NotifierNotification( type, message )
+		} );
 	}
 
 	/**
-	 * Short way to show a new info notification
+	 * Show a info notification (the specific way)
+	 * @param  {string}       message Notification message
+	 * @return {Promise<any>}         Promise, resolved when finished
 	 */
 	public info( message: string ): Promise<any> {
-		return this.notifierContainer.addNotification( new NotifierNotification( 'info', message ) );
+		return this.notify( 'info', message );
 	}
 
 	/**
-	 * Short way to show a new success notification
+	 * Show a success notification (the specific way)
+	 * @param  {string}       message Notification message
+	 * @return {Promise<any>}         Promise, resolved when finished
 	 */
 	public success( message: string ): Promise<any> {
-		return this.notifierContainer.addNotification( new NotifierNotification( 'success', message ) );
+		return this.notify( 'success', message );
 	}
 
 	/**
-	 * Short way to show a new warning notification
+	 * Show a warning notification (the specific way)
+	 * @param  {string}       message Notification message
+	 * @return {Promise<any>}         Promise, resolved when finished
 	 */
 	public warning( message: string ): Promise<any> {
-		return this.notifierContainer.addNotification( new NotifierNotification( 'warning', message ) );
+		return this.notify( 'warning', message );
 	}
 
 	/**
-	 * Short way to show a new error notification
+	 * Show a error notification (the specific way)
+	 * @param  {string}       message Notification message
+	 * @return {Promise<any>}         Promise, resolved when finished
 	 */
 	public error( message: string ): Promise<any> {
-		return this.notifierContainer.addNotification( new NotifierNotification( 'error', message ) );
+		return this.notify( 'error', message );
 	}
 
 	/**
 	 * Clear all notifications
+	 * @return {Promise<any>} Promise, resolved when finished
 	 */
 	public clearAll(): Promise<any> {
-		return this.notifierContainer.removeAllNotifications();
+		return this.notifierContainer.doAction( {
+			type: 'CLEAR_ALL'
+		} );
 	}
 
 	/**
-	 * Clear oldest notification
+	 * Clear the oldest notification
+	 * @return {Promise<any>} Promise, resolved when finished
 	 */
 	public clearOldest(): Promise<any> {
-		return this.notifierContainer.removeFirstNotification();
+		return this.notifierContainer.doAction( {
+			type: 'CLEAR_OLDEST'
+		} );
 	}
 
 	/**
-	 * Clear newest notification
+	 * Clear then newest notification
+	 * @return {Promise<any>} Promise, resolved when finished
 	 */
 	public clearNewest(): Promise<any> {
-		return this.notifierContainer.removeLastNotification();
+		return this.notifierContainer.doAction( {
+			type: 'CLEAR_NEWEST'
+		} );
 	}
-
-	// TODO: Local notification options
-	// TODO: Global event listeners as Observables
 
 }
