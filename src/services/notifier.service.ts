@@ -56,57 +56,57 @@ export class NotifierService {
 	/**
 	 * General way to show a new notification
 	 */
-	public notify( type: string, message: string ): void {
-		this.notifierContainer.addNotification( new NotifierNotification( type, message ) );
+	public notify( type: string, message: string ): Promise<any> {
+		return this.notifierContainer.addNotification( new NotifierNotification( type, message ) );
 	}
 
 	/**
 	 * Short way to show a new info notification
 	 */
-	public info( message: string ): void {
-		this.notifierContainer.addNotification( new NotifierNotification( 'info', message ) );
+	public info( message: string ): Promise<any> {
+		return this.notifierContainer.addNotification( new NotifierNotification( 'info', message ) );
 	}
 
 	/**
 	 * Short way to show a new success notification
 	 */
-	public success( message: string ): void {
-		this.notifierContainer.addNotification( new NotifierNotification( 'success', message ) );
+	public success( message: string ): Promise<any> {
+		return this.notifierContainer.addNotification( new NotifierNotification( 'success', message ) );
 	}
 
 	/**
 	 * Short way to show a new warning notification
 	 */
-	public warning( message: string ): void {
-		this.notifierContainer.addNotification( new NotifierNotification( 'warning', message ) );
+	public warning( message: string ): Promise<any> {
+		return this.notifierContainer.addNotification( new NotifierNotification( 'warning', message ) );
 	}
 
 	/**
 	 * Short way to show a new error notification
 	 */
-	public error( message: string ): void {
-		this.notifierContainer.addNotification( new NotifierNotification( 'error', message ) );
+	public error( message: string ): Promise<any> {
+		return this.notifierContainer.addNotification( new NotifierNotification( 'error', message ) );
 	}
 
 	/**
 	 * Clear all notifications
 	 */
-	public clearAll(): void {
-		this.notifierContainer.removeAllNotifications();
+	public clearAll(): Promise<any> {
+		return this.notifierContainer.removeAllNotifications();
 	}
 
 	/**
 	 * Clear oldest notification
 	 */
-	public clearOldest(): void {
-		this.notifierContainer.removeFirstNotification();
+	public clearOldest(): Promise<any> {
+		return this.notifierContainer.removeFirstNotification();
 	}
 
 	/**
 	 * Clear newest notification
 	 */
-	public clearNewest(): void {
-		this.notifierContainer.removeLastNotification();
+	public clearNewest(): Promise<any> {
+		return this.notifierContainer.removeLastNotification();
 	}
 
 	// TODO: Local notification options

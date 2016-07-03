@@ -39,20 +39,29 @@ export class AppComponent {
 	}
 
 	private test(): void {
-		this.notifier.notify( 'info', 'This is notification #' + this.index );
+		this.notifier.notify( 'info', 'This is notification #' + this.index ).then( () => {
+			console.log('>>> New notification added.');
+		} );
+		// this.notifier.notify( 'info', 'This is notification XXX' + this.index );
 		this.index++;
 	}
 
 	private clearAll(): void {
-		this.notifier.clearAll();
+		this.notifier.clearAll().then( () => {
+			console.log('>>> All notifications cleared.');
+		} );
 	}
 
 	private clearOldest(): void {
-		this.notifier.clearOldest();
+		this.notifier.clearOldest().then( () => {
+			console.log('>>> Oldest notification cleared.');
+		} );
 	}
 
 	private clearNewest(): void {
-		this.notifier.clearNewest();
+		this.notifier.clearNewest().then( () => {
+			console.log('>>> Newest notification cleared.');
+		} );
 	}
 
 }
