@@ -47,4 +47,12 @@ export class AppComponent {
 		this.notifier.clearAll();
 	}
 
+	private clearOldest(): void {
+		this.notifier.clearOldest();
+	}
+
+	private clearNewest(): void {
+		this.notifier.clearNewest();
+	}
+
 }

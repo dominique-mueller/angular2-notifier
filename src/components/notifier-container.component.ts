@@ -105,6 +105,20 @@ export class NotifierContainerComponent {
 
 	}
 
+	/**
+	 * Remove the first notification
+	 */
+	public removeFirstNotification(): void {
+		this.onDismiss( this.notifications[ 0 ].component );
+	}
+
+	/**
+	 * Remove the last notification
+	 */
+	public removeLastNotification(): void {
+		this.onDismiss( this.notifications[ this.notifications.length - 1 ].component );
+	}
+
 	// TODO - Document height?
 	private onCreated( notificationComponent: NotifierNotificationComponent ): void {
 

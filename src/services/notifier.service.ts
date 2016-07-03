@@ -88,12 +88,28 @@ export class NotifierService {
 		this.notifierContainer.addNotification( new NotifierNotification( 'error', message ) );
 	}
 
+	/**
+	 * Clear all notifications
+	 */
 	public clearAll(): void {
 		this.notifierContainer.removeAllNotifications();
 	}
 
+	/**
+	 * Clear oldest notification
+	 */
+	public clearOldest(): void {
+		this.notifierContainer.removeFirstNotification();
+	}
+
+	/**
+	 * Clear newest notification
+	 */
+	public clearNewest(): void {
+		this.notifierContainer.removeLastNotification();
+	}
+
 	// TODO: Local notification options
-	// TODO: Other functions, like clear and stuff
 	// TODO: Global event listeners as Observables
 
 }
