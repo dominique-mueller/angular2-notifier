@@ -62,7 +62,7 @@ gulp.task( 'watch',
 			} );
 
 			// Watch project files
-			gulp.watch( [ './src/*.ts', './index.ts' ], gulp.series( 'typescript:build--single' ) );
+			gulp.watch( [ './src/**/*.ts', './index.ts' ], gulp.series( 'typescript:build--single' ) );
 			gulp.watch( [ './styles/**/*.scss' ], gulp.series( 'sass:build--single' ) );
 
 			// Watch demo files

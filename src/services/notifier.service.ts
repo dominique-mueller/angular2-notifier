@@ -1,8 +1,8 @@
 /**
  * External imports
  */
-import { Injectable, ApplicationRef, ComponentRef, ViewContainerRef, ComponentResolver,
-	ComponentFactory, Optional } from '@angular/core';
+import { ApplicationRef, ComponentFactory, ComponentRef, ComponentMetadata, ComponentResolver, Component, Inject, Injectable, Optional,
+	ReflectiveInjector, ViewContainerRef } from '@angular/core';
 import { ViewContainerRef_ } from '@angular/core/src/linker/view_container_ref';
 import { ComponentRef_ } from '@angular/core/src/linker/component_factory';
 
@@ -10,35 +10,26 @@ import { ComponentRef_ } from '@angular/core/src/linker/component_factory';
  * Internal imports
  */
 import { NotifierNotification } from './../models/notifier-notification.model';
-import { NotifierOptions } from './../models/notifier-options-global.model';
 import { NotifierContainerComponent } from './../components/notifier-container.component';
 
 /**
- * Notifier service
- * TODO: Description
+ * Notifier service (TODO)
  */
 @Injectable()
 export class NotifierService {
 
 	/**
-	 * Reference to the notifier container component
+	 * Internal: Notifier component
 	 */
 	private notifierContainer: NotifierContainerComponent;
 
 	/**
-	 * Constructor
-	 * @param {ApplicationRef}    applicationRef    Angular application reference
-	 * @param {ComponentResolver} componentResolver Component resolver (instead of dynamic component loader)
+	 * Constructor, sets up global configuration and loads the notifier container component into the app
+	 * @param {ApplicationRef}       applicationRef       Application
+	 * @param {ComponentResolver}    componentResolver    Component resolver
+	 * @param {NotifierGlobalConfig} notifierGlobalConfig Global notifier config, coming from provider
 	 */
-	constructor( applicationRef: ApplicationRef, componentResolver: ComponentResolver,
-		@Optional() notifierOptions: NotifierOptions ) {
-
-		// notifierOptions === null when they are not provided explicetely
-		// TODO: Save custom options
-
-		console.log( '### NOTIFIER OPTIONS' );
-		console.log( notifierOptions );
-
+	public constructor( applicationRef: ApplicationRef, componentResolver: ComponentResolver ) {
 
 		// Dynamically add our notifier container into the document, after app bootstrap finished
 		// Inspired by the <https://github.com/valor-software/ng2-bootstrap/> components helper service
@@ -52,25 +43,57 @@ export class NotifierService {
 			componentResolver
 				.resolveComponent( NotifierContainerComponent )
 				.then( ( componentFactory: ComponentFactory<NotifierContainerComponent> ) => {
-					this.notifierContainer = rootComponent .createComponent<NotifierContainerComponent>(
-						componentFactory, rootComponent.length, rootComponent.parentInjector ).instance;
+					this.notifierContainer = rootComponent
+						.createComponent<NotifierContainerComponent>( componentFactory, rootComponent.length,
+							rootComponent.parentInjector )
+						.instance;
 				} );
 
 		} );
 
 	}
 
-	public notify( type: string, message: string, options?: Object ): void { // TODO: Options type
+	/**
+	 * General way to show a new notification
+	 */
+	public notify( type: string, message: string ): void {
 		this.notifierContainer.addNotification( new NotifierNotification( type, message ) );
 	}
 
-	// TODO: TEST
-	// public info( message: string ) {
-	// 	console.log( 'Info notification requested ...' ); // TODO
-	// 	const notification = new NotifierNotification( 'info', message );
-	// 	this.notifierContainer.addNotification( notification );
-	// }
+	/**
+	 * Short way to show a new info notification
+	 */
+	public info( message: string ): void {
+		this.notifierContainer.addNotification( new NotifierNotification( 'info', message ) );
+	}
 
+	/**
+	 * Short way to show a new success notification
+	 */
+	public success( message: string ): void {
+		this.notifierContainer.addNotification( new NotifierNotification( 'success', message ) );
+	}
+
+	/**
+	 * Short way to show a new warning notification
+	 */
+	public warning( message: string ): void {
+		this.notifierContainer.addNotification( new NotifierNotification( 'warning', message ) );
+	}
+
+	/**
+	 * Short way to show a new error notification
+	 */
+	public error( message: string ): void {
+		this.notifierContainer.addNotification( new NotifierNotification( 'error', message ) );
+	}
+
+	public clearAll(): void {
+		this.notifierContainer.removeAllNotifications();
+	}
+
+	// TODO: Local notification options
+	// TODO: Other functions, like clear and stuff
 	// TODO: Global event listeners as Observables
 
 }

@@ -12,20 +12,20 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var core_1 = require('@angular/core');
-var notifier_options_global_model_1 = require('./../models/notifier-options-global.model');
+var notifier_global_config_model_1 = require('./../models/notifier-global-config.model');
 var NotifierAnimationService = (function () {
-    function NotifierAnimationService(notifierOptions) {
-        this.options = notifierOptions === null ? new notifier_options_global_model_1.NotifierOptions() : notifierOptions;
+    function NotifierAnimationService(notifierGlobalConfig) {
+        this.config = notifierGlobalConfig === null ? new notifier_global_config_model_1.NotifierGlobalConfig() : notifierGlobalConfig;
         this.setupAnimationPresets();
     }
     NotifierAnimationService.prototype.getAnimation = function (name, way) {
-        var keyframes = this.animationPresets[name][way](this.options);
+        var keyframes = this.animationPresets[name][way](this.config);
         var duration = (way === 'in')
-            ? this.options.animations.show.duration
-            : this.options.animations.hide.duration;
+            ? this.config.animations.show.duration
+            : this.config.animations.hide.duration;
         var easing = (way === 'in')
-            ? this.options.animations.show.easing
-            : this.options.animations.hide.easing;
+            ? this.config.animations.show.easing
+            : this.config.animations.hide.easing;
         return {
             keyframes: [
                 keyframes.from,
@@ -165,7 +165,7 @@ var NotifierAnimationService = (function () {
     NotifierAnimationService = __decorate([
         core_1.Injectable(),
         __param(0, core_1.Optional()), 
-        __metadata('design:paramtypes', [notifier_options_global_model_1.NotifierOptions])
+        __metadata('design:paramtypes', [notifier_global_config_model_1.NotifierGlobalConfig])
     ], NotifierAnimationService);
     return NotifierAnimationService;
 }());

@@ -6,7 +6,8 @@ import { Injectable, Optional } from '@angular/core';
 /**
  * Internal imports
  */
-import { NotifierOptions } from './../models/notifier-options-global.model';
+import { NotifierGlobalConfig } from './../models/notifier-global-config.model';
+import { NotifierService } from './../services/notifier.service';
 
 /**
  * Notifier animation service
@@ -16,24 +17,25 @@ import { NotifierOptions } from './../models/notifier-options-global.model';
 export class NotifierAnimationService {
 
 	/**
-	 * Notifier options
+	 * Internal: Global notifier config
 	 */
-	private options: NotifierOptions;
+	private config: NotifierGlobalConfig;
 
 	/**
 	 * Animation presets
 	 */
 	private animationPresets: {
 		[ method: string ]: {
-			[ way: string ]: ( options: NotifierOptions ) => NotifierAnimationPreset
+			[ way: string ]: ( options: NotifierGlobalConfig ) => NotifierAnimationPreset
 		};
 	};
 
 	/**
-	 * Constructor
+	 * Constructor, sets up config and animation presets
+	 * @param {NotifierService} notifierService Notifier service
 	 */
-	constructor( @Optional() notifierOptions: NotifierOptions ) {
-		this.options = notifierOptions === null ? new NotifierOptions() : notifierOptions;
+	public constructor( @Optional() notifierGlobalConfig: NotifierGlobalConfig ) {
+		this.config = notifierGlobalConfig === null ? new NotifierGlobalConfig() : notifierGlobalConfig;
 		this.setupAnimationPresets();
 	}
 
@@ -43,13 +45,13 @@ export class NotifierAnimationService {
 	public getAnimation( name: string, way: string ): NotifierAnimation {
 
 		// Get all necessary animation values
-		const keyframes: NotifierAnimationPreset = this.animationPresets[ name ][ way ]( this.options );
+		const keyframes: NotifierAnimationPreset = this.animationPresets[ name ][ way ]( this.config );
 		const duration: number = ( way === 'in' )
-			? this.options.animations.show.duration
-			: this.options.animations.hide.duration;
+			? this.config.animations.show.duration
+			: this.config.animations.hide.duration;
 		const easing: string = ( way === 'in' )
-			? this.options.animations.show.easing
-			: this.options.animations.hide.easing;
+			? this.config.animations.show.easing
+			: this.config.animations.hide.easing;
 
 		// Build animation
 		return {
@@ -76,8 +78,7 @@ export class NotifierAnimationService {
 		this.animationPresets = {
 
 			fade: {
-
-				in: ( options: NotifierOptions ): NotifierAnimationPreset => {
+				in: ( options: NotifierGlobalConfig ): NotifierAnimationPreset => {
 					return {
 						from: {
 							opacity: 0
@@ -87,8 +88,7 @@ export class NotifierAnimationService {
 						}
 					};
 				},
-
-				out: ( options: NotifierOptions ): NotifierAnimationPreset => {
+				out: ( options: NotifierGlobalConfig ): NotifierAnimationPreset => {
 					return {
 						from: {
 							opacity: 1
@@ -98,12 +98,10 @@ export class NotifierAnimationService {
 						}
 					};
 				}
-
 			},
 
 			slide: {
-
-				in: ( options: NotifierOptions ): NotifierAnimationPreset => {
+				in: ( options: NotifierGlobalConfig ): NotifierAnimationPreset => {
 					let animationStart: Object;
 					let animationEnd: Object;
 					switch ( options.position.horizontal.position ) {
@@ -152,8 +150,7 @@ export class NotifierAnimationService {
 						to: animationEnd
 					};
 				},
-
-				out: ( options: NotifierOptions ): NotifierAnimationPreset => {
+				out: ( options: NotifierGlobalConfig ): NotifierAnimationPreset => {
 					let animationStart: Object;
 					let animationEnd: Object;
 					switch ( options.position.horizontal.position ) {
@@ -202,7 +199,6 @@ export class NotifierAnimationService {
 						to: animationEnd
 					};
 				}
-
 			}
 
 		};

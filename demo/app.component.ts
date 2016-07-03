@@ -2,7 +2,7 @@
  * Imports
  */
 import { Component } from '@angular/core';
-import { NotifierService, NotifierOptions, provideNotifierOptions } from '../';
+import { NotifierService, provideNotifierOptions } from '../';
 
 /**
  * App component
@@ -10,7 +10,13 @@ import { NotifierService, NotifierOptions, provideNotifierOptions } from '../';
 @Component( {
 	providers: [
 		NotifierService
-		// provideNotifierOptions()
+		// provideNotifierOptions( {
+		// 	position: {
+		// 		horizontal: {
+		// 			position: 'right'
+		// 		}
+		// 	}
+		// } )
 	],
 	selector: 'x-app',
 	templateUrl: './app.component.html'
@@ -37,8 +43,8 @@ export class AppComponent {
 		this.index++;
 	}
 
-	// private test2(): void {
-	// 	this.notifier.remove();
-	// }
+	private clearAll(): void {
+		this.notifier.clearAll();
+	}
 
 }

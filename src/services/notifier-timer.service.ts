@@ -4,8 +4,7 @@
 import { Injectable } from '@angular/core';
 
 /**
- * Notifier timer service (helper)
- * TODO: Description
+ * Notifier timer service (TODO)
  */
 @Injectable()
 export class NotifierTimerService {

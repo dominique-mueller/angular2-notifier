@@ -1,7 +1,11 @@
 /**
- * Imports
+ * External imports
  */
 import { bootstrap } from '@angular/platform-browser-dynamic';
+
+/**
+ * Internal imports
+ */
 import { AppComponent } from './app.component';
 
 // Go for it!

@@ -19,12 +19,15 @@
 		],
 		"curly": true,
 		"eofline": true,
-		"forin": false,
+		"forin": true,
 		"indent": [
 			true,
 			"tabs"
 		],
-		"interface-name": false,
+		"interface-name": [
+			true,
+			"never-prefix"
+		],
 		"jsdoc-format": true,
 		"label-position": true,
 		"label-undefined": true,
@@ -33,14 +36,34 @@
 			true,
 			120
 		],
-		"member-access": true,
+		"member-access": [
+			true,
+			"check-accessor",
+			"check-constructor"
+		],
 		"member-ordering": [
 			true,
-			"public-before-private",
-			"static-before-instance",
-			"variables-before-functions"
+			{
+				"order": [
+					"public-static-field",
+					"protected-static-field",
+					"private-static-field",
+					"public-instance-field",
+					"protected-instance-field",
+					"private-instance-field",
+					"constructor",
+					"public-static-method",
+					"protected-static-method",
+					"private-static-method",
+					"public-instance-method",
+					"protected-instance-method",
+					"private-instance-method",
+				]
+			}
 		],
-		"no-any": false,
+		"new-parens": true,
+		"no-angle-bracket-type-assertion": true,
+		"no-any": true,
 		"no-arg": true,
 		"no-bitwise": true,
 		"no-conditional-assignment": true,
@@ -48,6 +71,7 @@
 		"no-console": [
 			true,
 			"debug",
+			"log",
 			"info",
 			"time",
 			"timeEnd",
@@ -56,13 +80,18 @@
 		"no-construct": true,
 		"no-constructor-vars": true,
 		"no-debugger": true,
+		"no-default-export": true,
 		"no-duplicate-key": true,
 		"no-duplicate-variable": true,
 		"no-empty": true,
 		"no-eval": true,
 		"no-inferrable-types": false,
 		"no-internal-module": true,
+		"no-invalid-this": true,
+		"no-mergable-namespace": true,
+		"no-namespace": true,
 		"no-null-keyword": false,
+		"no-reference": true,
 		"no-require-imports": true,
 		"no-shadowed-variable": true,
 		"no-string-literal": false,
@@ -70,7 +99,7 @@
 		"no-trailing-whitespace": true,
 		"no-unreachable": true,
 		"no-unused-expression": true,
-		"no-unused-variable": false,
+		"no-unused-variable": true,
 		"no-use-before-declare": true,
 		"no-var-keyword": true,
 		"no-var-requires": true,
@@ -82,6 +111,10 @@
 			"check-else",
 			"check-finally",
 			"check-whitespace"
+		],
+		"one-variable-per-declaration": [
+			true,
+			"ignore-for-loop"
 		],
 		"quotemark": [
 			true,
@@ -98,10 +131,7 @@
 				"singleline": "never"
 			}
 		],
-		"triple-equals": [
-			true,
-			"allow-null-check"
-		],
+		"triple-equals": true,
 		"typedef": [
 			true,
 			"call-signature",
@@ -121,11 +151,8 @@
 				"variable-declaration": "nospace"
 			}
 		],
-		"use-strict": [
-			true,
-			"check-module",
-			"check-function"
-		],
+		"use-isnan": true,
+		"use-strict": true,
 		"variable-name": [
 			true,
 			"check-format",

@@ -12,7 +12,7 @@ const del = require( 'del' );
 gulp.task( 'env:clean--single', () => {
 	return del( [
 		'./index.js',
-		'./src/*.js',
+		'./src/**/*.js',
 		'./styles/**/*.css'
 	] );
 } );

@@ -1,16 +1,17 @@
 /**
  * External imports
  */
-import { Component, Optional, Inject } from '@angular/core';
+import { Component, Optional } from '@angular/core';
 // import { DOCUMENT } from '@angular/platform-browser';
 
 /**
  * Internal imports
  */
 import { NotifierNotification } from './../models/notifier-notification.model';
-import { NotifierOptions } from './../models/notifier-options-global.model';
-import { NotifierNotificationComponent } from './notifier-notification.component';
+import { NotifierGlobalConfig } from './../models/notifier-global-config.model';
+import { NotifierService } from './../services/notifier.service';
 import { NotifierAnimationService } from './../services/notifier-animations.service';
+import { NotifierNotificationComponent } from './notifier-notification.component';
 
 /**
  * Notifier container component
@@ -40,25 +41,23 @@ import { NotifierAnimationService } from './../services/notifier-animations.serv
 export class NotifierContainerComponent {
 
 	/**
-	 * Notifier options
+	 * Internal: Global notifier config
 	 */
-	private options: NotifierOptions;
+	private config: NotifierGlobalConfig;
 
 	/**
-	 * List of currently opened notifications
+	 * Internal: List of currently opened notifications
 	 */
 	private notifications: Array<NotifierNotification>;
 
 	/**
-	 * Constructor - TODO
+	 * Constructor
 	 */
-	constructor( @Optional() notifierOptions: NotifierOptions ) {
+	constructor( @Optional() notifierGlobalConfig: NotifierGlobalConfig ) {
 
 		// Setup
+		this.config = notifierGlobalConfig === null ? new NotifierGlobalConfig() : notifierGlobalConfig;
 		this.notifications = [];
-
-		// Use custom notifier options if present
-		this.options = notifierOptions === null ? new NotifierOptions() : notifierOptions;
 
 	}
 
@@ -67,6 +66,43 @@ export class NotifierContainerComponent {
 	 */
 	public addNotification( notification: NotifierNotification ): void {
 		this.notifications.push( notification );
+	}
+
+	/**
+	 * Remove all notifications
+	 */
+	public removeAllNotifications(): void {
+
+		// Remove them in an animated way?
+		if ( this.config.animations.enabled && this.config.animations.clear.offset > 0 ) {
+
+			// Hide all notifications, but with a animation offset
+			for ( let i = this.notifications.length - 1; i >= 0; i-- ) {
+				let animationOffset: number = this.config.position.vertical.position === 'top'
+					? this.config.animations.clear.offset * ( this.notifications.length - i )
+					: this.config.animations.clear.offset * i;
+				setTimeout( () => { // Note: Promise.all() and setTimeout() hate each other ;)
+					this.notifications[ i ].component.hide().then( () => {
+						if ( i === 0 ) { // Remove all notifications when the last one got animated out
+							this.notifications = []; // Burn them ... muhaha ...
+						}
+					} );
+				}, animationOffset );
+			}
+
+		} else {
+
+			// Hide all notifications at the same time
+			let animations: Array<Promise<any>> = [];
+			for ( let i = this.notifications.length - 1; i >= 0; i-- ) {
+				animations.push( this.notifications[ i ].component.hide() );
+			}
+			Promise.all( animations ).then( () => {
+				this.notifications = []; // Burn them ... muhaha ...
+			} );
+
+		}
+
 	}
 
 	// TODO - Document height?
@@ -79,7 +115,7 @@ export class NotifierContainerComponent {
 		if ( this.notifications.length > 1 ) {
 
 			// Decision: Stacking enabled?
-			if ( this.options.behaviour.stacking === false ) {
+			if ( this.config.behaviour.stacking === false ) {
 
 				// Hide the oldest notification, then show the new one
 				this.dismissNotification( this.notifications[ 0 ].component ).then( () => {
@@ -89,7 +125,7 @@ export class NotifierContainerComponent {
 			} else {
 
 				// Decision: Too many notifications opened?
-				if ( this.notifications.length > this.options.behaviour.stacking ) {
+				if ( this.notifications.length > this.config.behaviour.stacking ) {
 
 					// Hide the oldest notification
 					this.dismissNotification( this.notifications[ 0 ].component );
@@ -98,12 +134,12 @@ export class NotifierContainerComponent {
 					setTimeout( () => { // Animation overlap
 						this.shiftNotifications( this.notifications.slice( 1, this.notifications.length - 1 ),
 							notificationComponent.getHeight(), true );
-					}, Math.round( this.options.animations.show.duration / 5 ) );
+					}, Math.round( this.config.animations.show.duration / 5 ) );
 
 					// Show the new notification
 					setTimeout( () => { // Animation overlap
 						notificationComponent.show();
-					}, Math.round( this.options.animations.show.duration / 2.5 ) );
+					}, Math.round( this.config.animations.show.duration / 2.5 ) );
 
 				} else {
 
@@ -114,7 +150,7 @@ export class NotifierContainerComponent {
 					// Show the new notification
 					setTimeout( () => { // Animation overlap
 						notificationComponent.show();
-					}, Math.round( this.options.animations.show.duration / 5 ) );
+					}, Math.round( this.config.animations.show.duration / 5 ) );
 
 				}
 
@@ -140,7 +176,7 @@ export class NotifierContainerComponent {
 				let index: number = this.findNotificationIndexByComponent( notificationComponent );
 				this.shiftNotifications( this.notifications.slice( 0, index ),
 					notificationComponent.getHeight(), false );
-			}, Math.round( this.options.animations.show.duration / 5 ) );
+			}, Math.round( this.config.animations.show.duration / 5 ) );
 
 		} else {
 			this.dismissNotification( notificationComponent );

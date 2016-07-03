@@ -4,10 +4,15 @@
 import { Injectable } from '@angular/core';
 
 /**
+ * Internal imports
+ */
+import { NotifierGlobalOptions } from './notifier-global-options.model';
+
+/**
  * Notification options model
  */
 @Injectable()
-export class NotifierOptions { // TODO: Global & local ones
+export class NotifierGlobalConfig implements NotifierGlobalOptions {
 
 	/**
 	 * Notification position
@@ -27,7 +32,7 @@ export class NotifierOptions { // TODO: Global & local ones
 	/**
 	 * Notification theme (class)
 	 */
-	public theme: string; // STABLE
+	public theme: string;
 
 	/**
 	 * Behaviour
@@ -45,6 +50,9 @@ export class NotifierOptions { // TODO: Global & local ones
 	 * Animations
 	 */
 	public animations: {
+		clear: {
+			offset: number;
+		};
 		enabled: boolean;
 		hide: {
 			duration: number;
@@ -66,8 +74,11 @@ export class NotifierOptions { // TODO: Global & local ones
 	 * Constructor
 	 * @param {any = {}} options Custom options, default options as fallback
 	 */
-	constructor( options: Object = {
+	constructor( options: NotifierGlobalOptions = {
 		animations: {
+			clear: {
+				offset: 50
+			},
 			enabled: true,
 			hide: {
 				duration: 300,
