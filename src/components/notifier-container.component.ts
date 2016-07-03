@@ -118,7 +118,6 @@ export class NotifierContainerComponent {
 
 				// Hide an existing notification
 				case 'HIDE':
-					console.log(action);
 					this.removeNotification( action.payload )
 						.then( () => {
 							action.resolve(); // DONE
@@ -129,32 +128,44 @@ export class NotifierContainerComponent {
 
 				// Clear all notifications
 				case 'CLEAR_ALL':
-					this.removeAllNotifications()
-						.then( () => {
-							action.resolve(); // DONE
-							this.queue.inProgress = false;
-							this.doNextActionInQueue(); // Recursion ...
-						} );
+					if ( this.notifications.length === 0 ) {
+						action.resolve(); // DONE
+					} else {
+						this.removeAllNotifications()
+							.then( () => {
+								action.resolve(); // DONE
+								this.queue.inProgress = false;
+								this.doNextActionInQueue(); // Recursion ...
+							} );
+					}
 					break;
 
 				// Clear all notifications
 				case 'CLEAR_OLDEST':
-					this.removeNotification( this.notifications[ 0 ].component )
-						.then( () => {
-							action.resolve(); // DONE
-							this.queue.inProgress = false;
-							this.doNextActionInQueue(); // Recursion ...
-						} );
+					if ( this.notifications.length === 0 ) {
+						action.resolve(); // DONE
+					} else {
+						this.removeNotification( this.notifications[ 0 ].component )
+							.then( () => {
+								action.resolve(); // DONE
+								this.queue.inProgress = false;
+								this.doNextActionInQueue(); // Recursion ...
+							} );
+					}
 					break;
 
 				// Clear all notifications
 				case 'CLEAR_NEWEST':
-					this.removeNotification( this.notifications[ this.notifications.length - 1 ].component )
-						.then( () => {
-							action.resolve(); // DONE
-							this.queue.inProgress = false;
-							this.doNextActionInQueue(); // Recursion ...
-						} );
+					if ( this.notifications.length === 0 ) {
+						action.resolve(); // DONE
+					} else {
+						this.removeNotification( this.notifications[ this.notifications.length - 1 ].component )
+							.then( () => {
+								action.resolve(); // DONE
+								this.queue.inProgress = false;
+								this.doNextActionInQueue(); // Recursion ...
+							} );
+					}
 					break;
 
 			}
@@ -257,10 +268,8 @@ export class NotifierContainerComponent {
 	private removeAllNotifications(): Promise<any> {
 		return new Promise<any>( ( resolve: Function, reject: Function ) => {
 
-			// Decision: Are even notifications here to remove / remove them with animations / without animations?
-			if ( this.notifications.length === 0 ) {
-				resolve(); // DONE
-			} else if ( this.config.animations.enabled && this.config.animations.clear.offset > 0 ) {
+			// Decision: Remove them with animations / without animations?
+			if ( this.config.animations.enabled && this.config.animations.clear.offset > 0 ) {
 
 				// Hide all notifications, depending on vertical position and animation offset
 				for ( let i = this.notifications.length - 1; i >= 0; i-- ) {

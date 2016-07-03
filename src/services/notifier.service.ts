@@ -66,6 +66,15 @@ export class NotifierService {
 	}
 
 	/**
+	 * Show a default notification (the specific way)
+	 * @param  {string}       message Notification message
+	 * @return {Promise<any>}         Promise, resolved when finished
+	 */
+	public default( message: string ): Promise<any> {
+		return this.notify( 'default', message );
+	}
+
+	/**
 	 * Show a info notification (the specific way)
 	 * @param  {string}       message Notification message
 	 * @return {Promise<any>}         Promise, resolved when finished

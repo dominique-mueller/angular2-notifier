@@ -1,6 +1,13 @@
 <p>Hello World</p>
 
-<button type="button" (click)="show()">Click me!</button>
+<h1>Show notifications</h1>
+<button type="button" (click)="show( 'default' )">Default me!</button>
+<button type="button" (click)="show( 'info' )">Info me!</button>
+<button type="button" (click)="show( 'success' )">Success me!</button>
+<button type="button" (click)="show( 'warning' )">Warning me!</button>
+<button type="button" (click)="show( 'error' )">Error me!</button>
+
+<h1>Clear notifications</h1>
 <button type="button" (click)="clearAll()">Clear all notifications!</button>
 <button type="button" (click)="clearNewest()">Clear newest notification!</button>
 <button type="button" (click)="clearOldest()">Clear oldest notification!</button>
