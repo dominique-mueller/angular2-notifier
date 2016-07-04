@@ -2,7 +2,7 @@
  * Imports
  */
 import { Component } from '@angular/core';
-import { NotifierService, provideNotifierOptions } from '../';
+import { NotifierService } from '../';
 
 /**
  * App component

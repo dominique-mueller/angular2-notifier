@@ -27,7 +27,7 @@ export class NotifierTimerService {
 	/**
 	 * Constructor
 	 */
-	constructor() {
+	public constructor() {
 		this.now = 0;
 		this.remaining = 0;
 		this.timerId = null;

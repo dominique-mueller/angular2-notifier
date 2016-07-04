@@ -3,22 +3,23 @@
 /**
  * Gulp imports
  */
-const gulp = require( 'gulp' );
 const del = require( 'del' );
+const gulp = require( 'gulp' );
 
 /**
- * Gulp: Clean build, includes JavaScript and CSS files
+ * Gulp task: Clean project build, includes generated JavaScript and CSS files
  */
 gulp.task( 'env:clean--single', () => {
 	return del( [
 		'./index.js',
 		'./src/**/*.js',
-		'./styles/**/*.css'
+		'./styles/**/*.css',
+		'./bundles/**/*'
 	] );
 } );
 
 /**
- * Gulp: Clean the demo project build
+ * Gulp task: Clean demo build, includes generated JavaScript files
  */
 gulp.task( 'env:clean--demo', () => {
 	return del( [

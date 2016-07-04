@@ -74,7 +74,7 @@ export class NotifierGlobalConfig implements NotifierGlobalOptions {
 	 * Constructor
 	 * @param {any = {}} options Custom options, default options as fallback
 	 */
-	constructor( options: NotifierGlobalOptions = {
+	public constructor( options: NotifierGlobalOptions = {
 		animations: {
 			clear: {
 				offset: 50

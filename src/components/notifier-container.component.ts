@@ -9,13 +9,11 @@ import { Component, Optional } from '@angular/core';
 import { NotifierNotification } from './../models/notifier-notification.model';
 import { NotifierGlobalConfig } from './../models/notifier-global-config.model';
 import { NotifierAction } from './../models/notifier-action.model';
-import { NotifierService } from './../services/notifier.service';
 import { NotifierAnimationService } from './../services/notifier-animations.service';
 import { NotifierNotificationComponent } from './notifier-notification.component';
 
 /**
- * Notifier container component
- * TODO: Description
+ * Notifier container component (TODO)
  */
 @Component( {
 	directives: [
@@ -66,7 +64,7 @@ export class NotifierContainerComponent {
 	/**
 	 * Constructor
 	 */
-	constructor( @Optional() notifierGlobalConfig: NotifierGlobalConfig ) {
+	public constructor( @Optional() notifierGlobalConfig: NotifierGlobalConfig ) {
 
 		// Setup
 		this.config = notifierGlobalConfig === null ? new NotifierGlobalConfig() : notifierGlobalConfig;
@@ -175,81 +173,6 @@ export class NotifierContainerComponent {
 	}
 
 	/**
-	 * Event handler, gets called when the notification component has been initialized
-	 * @param {NotifierNotificationComponent} notificationComponent Notification component
-	 */
-	private onCreated( notificationComponent: NotifierNotificationComponent ): void {
-
-		// Save our notification component reference
-		this.notifications[ this.notifications.length - 1 ].component = notificationComponent;
-
-		// Decision: First notification?
-		if ( this.notifications.length > 1 ) {
-
-			// Decision: Stacking enabled?
-			if ( this.config.behaviour.stacking === false ) {
-
-				// Hide the oldest notification, then show the new one
-				this.animateOutNotification( this.notifications[ 0 ].component ).then( () => {
-					notificationComponent.show().then( () => {
-						this.tempNotificationResolver();
-					} );
-				} );
-
-			} else {
-
-				// Decision: Too many notifications opened?
-				if ( this.notifications.length > this.config.behaviour.stacking ) {
-
-					// Hide the oldest notification, shift other notifications, show our new notification
-					this.animateOutNotification( this.notifications[ 0 ].component );
-					let notifications: Array<NotifierNotification> =
-						this.notifications.slice( 1, this.notifications.length - 1 );
-					setTimeout( () => { // Animation overlap
-						this.animateShiftNotifications( notifications, notificationComponent.getHeight(), true );
-					}, Math.round( this.config.animations.show.duration / 5 ) );
-					setTimeout( () => { // Animation overlap
-						notificationComponent.show().then( () => {
-							this.tempNotificationResolver();
-						} );
-					}, Math.round( this.config.animations.show.duration / 2.5 ) );
-
-				} else {
-
-					// Shift other notifications, show our new notification
-					let notifications: Array<NotifierNotification> =
-						this.notifications.slice( 0, this.notifications.length - 1 );
-					this.animateShiftNotifications( notifications, notificationComponent.getHeight(), true );
-					setTimeout( () => { // Animation overlap
-						notificationComponent.show().then( () => {
-							this.tempNotificationResolver();
-						} );
-					}, Math.round( this.config.animations.show.duration / 5 ) );
-
-				}
-
-			}
-
-		} else {
-			notificationComponent.show().then( () => {
-				this.tempNotificationResolver();
-			} );
-		}
-
-	}
-
-	/**
-	 * Event handler, gets called when the notification component should be dismissed
-	 * @param {NotifierNotificationComponent} notificationComponent Notification component
-	 */
-	private onDismiss( notificationComponent: NotifierNotificationComponent ): void {
-		this.doAction( {
-			type: 'HIDE',
-			payload: notificationComponent
-		} );
-	}
-
-	/**
 	 * Add a new notification
 	 * @param  {NotifierNotification} notification Notification
 	 * @return {Promise<any>}                      Promise, resolved when finished
@@ -272,7 +195,7 @@ export class NotifierContainerComponent {
 			if ( this.config.animations.enabled && this.config.animations.clear.offset > 0 ) {
 
 				// Hide all notifications, depending on vertical position and animation offset
-				for ( let i = this.notifications.length - 1; i >= 0; i-- ) {
+				for ( let i: number = this.notifications.length - 1; i >= 0; i-- ) {
 					let animationOffset: number = this.config.position.vertical.position === 'top'
 						? this.config.animations.clear.offset * ( this.notifications.length - i )
 						: this.config.animations.clear.offset * i;
@@ -290,7 +213,7 @@ export class NotifierContainerComponent {
 
 				// Hide all notifications, all at the same time
 				let animations: Array<Promise<any>> = [];
-				for ( let i = this.notifications.length - 1; i >= 0; i-- ) {
+				for ( let i: number = this.notifications.length - 1; i >= 0; i-- ) {
 					animations.push( this.notifications[ i ].component.hide() );
 				}
 				Promise.all( animations ).then( () => {
@@ -371,5 +294,84 @@ export class NotifierContainerComponent {
 			return notification.component === notificationComponent;
 		} );
 	}
+
+	/* tslint:disable:no-unused-variable - because the functions are only called by the template / annotation */
+
+	/**
+	 * Event handler, gets called when the notification component has been initialized
+	 * @param {NotifierNotificationComponent} notificationComponent Notification component
+	 */
+	private onCreated( notificationComponent: NotifierNotificationComponent ): void {
+
+		// Save our notification component reference
+		this.notifications[ this.notifications.length - 1 ].component = notificationComponent;
+
+		// Decision: First notification?
+		if ( this.notifications.length > 1 ) {
+
+			// Decision: Stacking enabled?
+			if ( this.config.behaviour.stacking === false ) {
+
+				// Hide the oldest notification, then show the new one
+				this.animateOutNotification( this.notifications[ 0 ].component ).then( () => {
+					notificationComponent.show().then( () => {
+						this.tempNotificationResolver();
+					} );
+				} );
+
+			} else {
+
+				// Decision: Too many notifications opened?
+				if ( this.notifications.length > this.config.behaviour.stacking ) {
+
+					// Hide the oldest notification, shift other notifications, show our new notification
+					this.animateOutNotification( this.notifications[ 0 ].component );
+					let notifications: Array<NotifierNotification> =
+						this.notifications.slice( 1, this.notifications.length - 1 );
+					setTimeout( () => { // Animation overlap
+						this.animateShiftNotifications( notifications, notificationComponent.getHeight(), true );
+					}, Math.round( this.config.animations.show.duration / 5 ) );
+					setTimeout( () => { // Animation overlap
+						notificationComponent.show().then( () => {
+							this.tempNotificationResolver();
+						} );
+					}, Math.round( this.config.animations.show.duration / 2.5 ) );
+
+				} else {
+
+					// Shift other notifications, show our new notification
+					let notifications: Array<NotifierNotification> =
+						this.notifications.slice( 0, this.notifications.length - 1 );
+					this.animateShiftNotifications( notifications, notificationComponent.getHeight(), true );
+					setTimeout( () => { // Animation overlap
+						notificationComponent.show().then( () => {
+							this.tempNotificationResolver();
+						} );
+					}, Math.round( this.config.animations.show.duration / 5 ) );
+
+				}
+
+			}
+
+		} else {
+			notificationComponent.show().then( () => {
+				this.tempNotificationResolver();
+			} );
+		}
+
+	}
+
+	/**
+	 * Event handler, gets called when the notification component should be dismissed
+	 * @param {NotifierNotificationComponent} notificationComponent Notification component
+	 */
+	private onDismiss( notificationComponent: NotifierNotificationComponent ): void {
+		this.doAction( {
+			payload: notificationComponent,
+			type: 'HIDE'
+		} );
+	}
+
+	/* tslint:enable:no-unused-variable */
 
 }

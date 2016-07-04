@@ -12,8 +12,7 @@ import { NotifierAnimationService, NotifierAnimation } from './../services/notif
 import { NotifierTimerService } from './../services/notifier-timer.service';
 
 /**
- * Notifier notification component
- * TODO: Description
+ * Notifier notification component (TODO)
  */
 @Component( {
 	host: {
@@ -92,7 +91,7 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	/**
 	 * Constructor
 	 */
-	constructor( elementRef: ElementRef, renderer: Renderer, @Optional() notifierGlobalConfig: NotifierGlobalConfig,
+	public constructor( elementRef: ElementRef, renderer: Renderer, @Optional() notifierGlobalConfig: NotifierGlobalConfig,
 		notifierAnimationService: NotifierAnimationService, notifierTimerService: NotifierTimerService ) {
 
 		// Setup
@@ -287,6 +286,37 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	}
 
 	/**
+	 * Start the auto hide timer
+	 */
+	private runTimer(): void {
+		if ( this.config.behaviour.autoHide !== false && this.config.behaviour.autoHide > 0 ) {
+			this.notifierTimerService.run( this.config.behaviour.autoHide as number, () => {
+				this.dismiss.emit( this ); // Time is up
+			} );
+		}
+	}
+
+	/**
+	 * Pause the auto hide timer
+	 */
+	private pauseTimer(): void {
+		if ( this.config.behaviour.autoHide !== false && this.config.behaviour.autoHide > 0 ) {
+			this.notifierTimerService.pause();
+		}
+	}
+
+	/**
+	 * Stop the auto hdie timer
+	 */
+	private stopTimer(): void {
+		if ( this.config.behaviour.autoHide !== false && this.config.behaviour.autoHide > 0 ) {
+			this.notifierTimerService.stop();
+		}
+	}
+
+	/* tslint:disable:no-unused-variable - because the functions are only called by the template / annotation */
+
+	/**
 	 * Call this function when we click on the notification
 	 */
 	private onDismiss( target: any ): void {
@@ -314,33 +344,6 @@ export class NotifierNotificationComponent implements AfterViewInit {
 		}
 	}
 
-	/**
-	 * Start the auto hide timer
-	 */
-	private runTimer(): void {
-		if ( this.config.behaviour.autoHide !== false && this.config.behaviour.autoHide > 0 ) {
-			this.notifierTimerService.run( <number> this.config.behaviour.autoHide, () => {
-				this.dismiss.emit( this ); // Time is up
-			} );
-		}
-	}
-
-	/**
-	 * Pause the auto hide timer
-	 */
-	private pauseTimer(): void {
-		if ( this.config.behaviour.autoHide !== false && this.config.behaviour.autoHide > 0 ) {
-			this.notifierTimerService.pause();
-		}
-	}
-
-	/**
-	 * Stop the auto hdie timer
-	 */
-	private stopTimer(): void {
-		if ( this.config.behaviour.autoHide !== false && this.config.behaviour.autoHide > 0 ) {
-			this.notifierTimerService.stop();
-		}
-	}
+	/* tslint:enable:no-unused-variable */
 
 }

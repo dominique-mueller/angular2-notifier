@@ -60,8 +60,8 @@ export class NotifierService {
 	 */
 	public notify( type: string, message: string ): Promise<any> {
 		return this.notifierContainer.doAction( {
-			type: 'SHOW',
-			payload: new NotifierNotification( type, message )
+			payload: new NotifierNotification( type, message ),
+			type: 'SHOW'
 		} );
 	}
 

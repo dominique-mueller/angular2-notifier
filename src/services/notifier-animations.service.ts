@@ -7,11 +7,9 @@ import { Injectable, Optional } from '@angular/core';
  * Internal imports
  */
 import { NotifierGlobalConfig } from './../models/notifier-global-config.model';
-import { NotifierService } from './../services/notifier.service';
 
 /**
- * Notifier animation service
- * TODO: Description
+ * Notifier animation service (TODO)
  */
 @Injectable()
 export class NotifierAnimationService {
@@ -138,7 +136,7 @@ export class NotifierAnimationService {
 							let rightPosition: string =
 								`calc( 100% + ${ options.position.horizontal.distance }px + 10px )`;
 							animationStart = {
-								transform: `translate3d( ${ leftPosition }, 0, 0 )`
+								transform: `translate3d( ${ rightPosition }, 0, 0 )`
 							};
 							animationEnd = {
 								transform: 'translate3d( 0, 0, 0 )'
@@ -190,7 +188,7 @@ export class NotifierAnimationService {
 								transform: 'translate3d( 0, 0, 0 )'
 							};
 							animationEnd = {
-								transform: `translate3d( ${ leftPosition }, 0, 0 )`
+								transform: `translate3d( ${ rightPosition }, 0, 0 )`
 							};
 							break;
 					}
