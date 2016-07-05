@@ -3,11 +3,14 @@ node_modules
 typings
 
 # Build
-build
+index.js
+src/**/*.js
+styles/**/*.css
 demo/*.js
 
 # Log files
 *.log
+npm-debug.log
 undefinederror.json
 undefinedinfo.json
 info.log.json

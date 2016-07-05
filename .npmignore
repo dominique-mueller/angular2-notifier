@@ -2,12 +2,9 @@
 node_modules
 typings
 
-# Build
-build
-demo_build
-
 # Log files
 *.log
+npm-debug.log
 undefinederror.json
 undefinedinfo.json
 info.log.json

@@ -1,0 +1,49 @@
+// THEME: MATERIAL
+
+.x-notifier__notification--material {
+	padding: 11px 26px 10px;
+	border-radius: 3px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
+	cursor: default;
+
+	.x-notifier__notification-message {
+		display: inline-block;
+		margin-top: 0;
+		margin-bottom: 0;
+		font-size: 15px;
+		line-height: 32px;
+		vertical-align: top;
+	}
+
+	.x-notifier__notification-button {
+		display: inline-block;
+		width: 32px;
+		height: 32px;
+		margin-right: -10px;
+		margin-left: 10px;
+		padding: 6px;
+		transition: opacity .2s ease;
+		border: none;
+		outline: none;
+		background: none;
+		cursor: pointer;
+		opacity: .5;
+		vertical-align: top;
+
+		&:hover,
+		&:focus {
+			opacity: .9;
+		}
+
+		&:active {
+			transform: scale(.82);
+			opacity: 1;
+		}
+
+	}
+
+	.x-notifier__notification-dismiss { // 16px size
+		fill: #FFF;
+	}
+
+}

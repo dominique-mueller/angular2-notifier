@@ -1,0 +1,32 @@
+// CORE STYLES
+
+// Container
+
+.x-notifier__container {
+
+	* {
+		box-sizing: border-box;
+	}
+
+}
+
+.x-notifier__container-list {
+	margin-top: 0;
+	margin-bottom: 0;
+	padding-left: 0;
+	list-style-type: none;
+}
+
+// Notification
+
+.x-notifier__notification {
+	display: block;
+	position: fixed;
+	visibility: hidden; // Will be switched when animating
+	z-index: 10000;
+
+	// Scrolling performance matters!
+	// See details at <https://benfrain.com/improving-css-performance-fixed-position-elements/>
+	backface-visibility: hidden;
+
+}
