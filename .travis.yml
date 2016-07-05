@@ -9,6 +9,7 @@ before_install:
   - "echo 'Installing dependencies via NPM ...'"
 install:
   - npm install
+  - npm run typings install
 branches:
   only:
     - master
