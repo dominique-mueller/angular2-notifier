@@ -1,18 +1,33 @@
 sudo: false
 language: node_js
+cache:
+  directories:
+    - node_modules
 notifications:
   email: false
-install: true
+before_install:
+  - "echo 'Installing dependencies via NPM ...'"
+install:
+  - npm install
 branches:
   only:
     - master
     - develop
+before_script:
+  - npm prune
+  - "echo 'Done.'"
+  - "echo 'Running build process (no tests yet) ...'"
+script:
+  - npm run gulp build:prod
+after_success:
+  - "echo 'Done.'"
 before_deploy:
   - "echo 'Deploying on NPM ...'"
 deploy:
   provider: npm
   email: dominique.m.mueller@gmail.com
   api_key: "$NPM_TOKEN"
+  skip_cleanup: true
   on:
     branch: master
     repo: dominique-mueller/angular2-notifier

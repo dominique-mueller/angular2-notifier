@@ -16,9 +16,9 @@ const typescriptBuild = require( './gulp-tasks/typescript-build' );
 const typescriptLint = require( './gulp-tasks/typescript-lint' );
 
 /**
- * Gulp task: Build library (without linting)
+ * Gulp task: Build library (for development)
  */
-gulp.task( 'build:slim',
+gulp.task( 'build:dev',
 	gulp.series( [
 		'env:clean',
 		gulp.parallel( [
@@ -29,9 +29,9 @@ gulp.task( 'build:slim',
 );
 
 /**
- * Gulp task: Build library (with linting)
+ * Gulp task: Build library (for production)
  */
-gulp.task( 'build:full',
+gulp.task( 'build:prod',
 	gulp.series( [
 		'env:clean',
 		gulp.parallel( [

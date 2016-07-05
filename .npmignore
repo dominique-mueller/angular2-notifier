@@ -4,6 +4,7 @@ typings
 
 # Log files
 *.log
+npm-debug.log
 undefinederror.json
 undefinedinfo.json
 info.log.json
