@@ -7,7 +7,7 @@ const gulp = require( 'gulp' );
 const sassLint = require( 'gulp-sass-lint' );
 
 /**
- * Gulp task: Lint all project SASS files
+ * Gulp task: Lint all SASS files
  */
 gulp.task( 'sass:lint', () => {
 	return gulp

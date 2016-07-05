@@ -7,7 +7,7 @@ const gulp = require( 'gulp' );
 const tslint = require( 'gulp-tslint' );
 
 /**
- * Gulp task: Lint all project TypeScript files
+ * Gulp task: Lint all TypeScript files
  */
 gulp.task( 'typescript:lint', () => {
 	return gulp

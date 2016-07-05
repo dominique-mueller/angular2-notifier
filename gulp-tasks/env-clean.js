@@ -9,12 +9,11 @@ const gulp = require( 'gulp' );
 /**
  * Gulp task: Clean project build, includes generated JavaScript and CSS files
  */
-gulp.task( 'env:clean--single', () => {
+gulp.task( 'env:clean', () => {
 	return del( [
 		'./index.js',
 		'./src/**/*.js',
-		'./styles/**/*.css',
-		'./bundles/**/*'
+		'./styles/**/*.css'
 	] );
 } );
 

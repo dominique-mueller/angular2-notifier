@@ -7,7 +7,6 @@ index.js
 src/**/*.js
 styles/**/*.css
 demo/*.js
-bundles
 
 # Log files
 *.log

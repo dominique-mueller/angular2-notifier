@@ -5,18 +5,16 @@
  */
 const autoprefixer = require( 'gulp-autoprefixer' );
 const browserSync = require( 'browser-sync' );
-const cleanCss = require( 'gulp-clean-css' );
 const gulp = require( 'gulp' );
-const rename = require( 'gulp-rename' );
 const sass = require( 'gulp-sass' );
 
 /**
- * Gulp task: Compile each project SASS file into a CSS file
+ * Gulp task: Compile all SASS file into CSS
  */
-gulp.task( 'sass:build--single', () => {
+gulp.task( 'sass:build', () => {
 	return gulp
 		.src( [
-			'./styles/**/*.scss' // Each single file
+			'./styles/**/*.scss' // Each single file, including the entry point
 		] )
 		.pipe(
 			sass( { // Compile
@@ -28,24 +26,3 @@ gulp.task( 'sass:build--single', () => {
 		.pipe( gulp.dest( './styles' ) ) // Same folder structure
 		.pipe( browserSync.stream( { once: true } ) );
 } );
-
-/**
- * Gulp task: Build SASS as bundle
- */
-gulp.task( 'sass:build--bundle',
-	gulp.series( [
-		'sass:build--single',
-		() => {
-			return gulp
-				.src( [
-					'./styles/style.css' // Use the already compiled file here
-				] )
-				.pipe( rename( 'style.bundle.css' ) )
-				.pipe( gulp.dest( './bundles' ) )
-				.pipe( cleanCss() ) // Minify
-				.pipe( rename( 'style.bundle.min.css' ) )
-				.pipe( gulp.dest( './bundles' ) )
-				.pipe( browserSync.stream( { once: true } ) );
-		}
-	] )
-);

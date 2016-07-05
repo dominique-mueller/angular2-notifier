@@ -1,11 +1,15 @@
 /**
- * Imports
+ * External imports
  */
 import { Component } from '@angular/core';
+
+/**
+ * Internal imports
+ */
 import { NotifierService } from '../';
 
 /**
- * App component
+ * App (root) component
  */
 @Component( {
 	providers: [
@@ -30,12 +34,9 @@ export class AppComponent {
 	 * Constructor
 	 * @param {NotifierService} notifier Notifier service
 	 */
-	constructor( notifier: NotifierService ) {
-
-		// Setup
+	public constructor( notifier: NotifierService ) {
 		this.notifier = notifier;
 		this.counter = 0;
-
 	}
 
 	/**

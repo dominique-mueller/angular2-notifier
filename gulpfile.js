@@ -7,7 +7,7 @@ const browserSync = require( 'browser-sync' );
 const gulp = require( 'gulp' );
 
 /**
- * Task imports
+ * Gulp tasks imports
  */
 const envClean = require( './gulp-tasks/env-clean' );
 const sassBuild = require( './gulp-tasks/sass-build' );
@@ -16,31 +16,31 @@ const typescriptBuild = require( './gulp-tasks/typescript-build' );
 const typescriptLint = require( './gulp-tasks/typescript-lint' );
 
 /**
- * Gulp task: Build project for DEV
+ * Gulp task: Build library (without linting)
  */
-gulp.task( 'build:dev',
+gulp.task( 'build:slim',
 	gulp.series( [
-		'env:clean--single',
+		'env:clean',
 		gulp.parallel( [
-			'typescript:build--single',
-			'sass:build--single'
+			'typescript:build',
+			'sass:build'
 		] )
 	] )
 );
 
 /**
- * Gulp task: Build project for PROD
+ * Gulp task: Build library (with linting)
  */
-gulp.task( 'build:prod',
+gulp.task( 'build:full',
 	gulp.series( [
-		'env:clean--single',
+		'env:clean',
 		gulp.parallel( [
 			'typescript:lint',
 			'sass:lint'
 		] ),
 		gulp.parallel( [
-			'typescript:build--single',
-			'sass:build--single'
+			'typescript:build',
+			'sass:build'
 		] )
 	] )
 );
@@ -83,8 +83,8 @@ gulp.task( 'watch',
 			} );
 
 			// Watch project files
-			gulp.watch( [ './src/**/*.ts', './index.ts' ], gulp.series( 'typescript:build--single' ) );
-			gulp.watch( [ './styles/**/*.scss' ], gulp.series( 'sass:build--single' ) );
+			gulp.watch( [ './src/**/*.ts', './index.ts' ], gulp.series( 'typescript:build' ) );
+			gulp.watch( [ './styles/**/*.scss' ], gulp.series( 'sass:build' ) );
 
 			// Watch demo files
 			gulp.watch( [ './demo/*.ts' ], gulp.series( [ 'typescript:build--demo' ] ) );
