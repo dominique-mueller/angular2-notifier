@@ -58,6 +58,13 @@ var packages = {
 };
 ```
 
+Depending on which browsers you want to support, you might need to use some of the following **polyfills**:
+
+- For ES6 features (especially Promises), you can use **[core-js](https://github.com/zloirock/core-js)**.
+- For animations (especially the Web Animations API), you can use **[web-animations-js](https://github.com/web-animations/web-animations-js)**.
+
+> Both polyfills are also officially recommended by the Angular 2 team.
+
 <br><br>
 
 ## How to setup
