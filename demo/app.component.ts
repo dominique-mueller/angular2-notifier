@@ -12,6 +12,9 @@ import { NotifierService } from '../';
  * App (root) component
  */
 @Component( {
+	host: {
+		class: 'x-app'
+	},
 	providers: [
 		NotifierService
 	],
