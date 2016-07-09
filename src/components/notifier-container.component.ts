@@ -206,19 +206,30 @@ export class NotifierContainerComponent {
 		return new Promise<any>( ( resolve: Function, reject: Function ) => {
 
 			// Decision: Remove them with animations / without animations?
-			if ( this.config.animations.enabled && this.config.animations.clear.offset > 0 ) {
+			if ( this.config.animations.enabled && this.config.animations.clear.offset !== false
+				&& this.config.animations.clear.offset > 0 ) {
 
 				// Hide all notifications, depending on vertical position and animation offset
 				for ( let i: number = this.notifications.length - 1; i >= 0; i-- ) {
 					let animationOffset: number = this.config.position.vertical.position === 'top'
-						? this.config.animations.clear.offset * ( this.notifications.length - i )
-						: this.config.animations.clear.offset * i;
+						? this.config.animations.clear.offset as number * ( this.notifications.length - i )
+						: this.config.animations.clear.offset as number * i;
 					setTimeout( () => { // Note: Promise.all() and setTimeout() hate each other ;)
 						this.notifications[ i ].component.hide().then( () => {
-							if ( i === 0 ) { // Remove all notifications when the last one got animated out
-								this.notifications = []; // Burn them ... muhaha ...
-								resolve(); // DONE
+
+							// Remove all notifications when the last one got animated out
+							if ( this.config.position.vertical.position === 'top' ) {
+								if ( i === 0 ) {
+									this.notifications = []; // Burn them ... muhaha ...
+									resolve(); // DONE
+								}
+							} else {
+								if ( i === this.notifications.length - 1 ) {
+									this.notifications = []; // Burn them ... muhaha ...
+									resolve(); // DONE
+								}
 							}
+
 						} );
 					}, animationOffset );
 				}
@@ -251,17 +262,27 @@ export class NotifierContainerComponent {
 			// Decision: Shift other notifications before hiding our one / just hide our notification?
 			if ( this.notifications.length > 1 ) {
 				this.animateOutNotification( notificationComponent );
-				setTimeout( () => { // Animation overlap
+				if ( this.config.animations.enabled ) {
+					setTimeout( () => { // Animation overlap
+						let index: number = this.getNotificationIndex( notificationComponent );
+						let notifications: Array<NotifierNotification> = this.notifications.slice( 0, index );
+						this.animateShiftNotifications( notifications, notificationComponent.getHeight(), false )
+							.then( () => {
+								resolve(); // DONE
+							} );
+					}, Math.round( this.config.animations.show.duration / 5 ) );
+				} else {
 					let index: number = this.getNotificationIndex( notificationComponent );
 					let notifications: Array<NotifierNotification> = this.notifications.slice( 0, index );
 					this.animateShiftNotifications( notifications, notificationComponent.getHeight(), false )
 						.then( () => {
 							resolve(); // DONE
 						} );
-				}, Math.round( this.config.animations.show.duration / 5 ) );
+				}
 			} else {
-				this.animateOutNotification( notificationComponent );
-				resolve(); // DONE
+				this.animateOutNotification( notificationComponent ).then( () => {
+					resolve(); // DONE
+				} );
 			}
 
 		} );
@@ -324,7 +345,7 @@ export class NotifierContainerComponent {
 		if ( this.notifications.length > 1 ) {
 
 			// Decision: Stacking enabled?
-			if ( this.config.behaviour.stacking === false ) {
+			if ( this.config.behaviour.stacking === false || this.config.behaviour.stacking < 2 ) {
 
 				// Hide the oldest notification, then show the new one
 				this.animateOutNotification( this.notifications[ 0 ].component ).then( () => {

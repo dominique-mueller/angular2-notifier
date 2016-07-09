@@ -68,22 +68,7 @@ You need to setup the library in your Angular 2 application as well as include t
 
 ### Setup library in your Angular 2 application
 
-You need to tell the Angular 2 Dependency Injection about our library. To do so, provide the highest component of your application (root component) with the `Notifier Service`.
-
-``` typescript
-import { NotifierService } from 'angular2-notifier';
-
-@Component( {
-	providers: [
-		NotifierService
-	]
-} )
-export class AppComponent {
-	// Implementation details
-}
-```
-
-Or, **alternatively**, provide the `Notifier Service` within your bootstrap process:
+You need to tell the Angular 2 Dependency Injection about our library. To do so, provide the `Notifier Service` within your bootstrap process (or alternatively in the highest component you have):
 
 ````typescript
 import { NotifierService } from 'angular2-notifier';
@@ -243,26 +228,7 @@ This library is fully customizable, so it works the way you want it to and it bl
 
 > Note: This step is additional to the setup step, so you still need to provide the `Notifier Service`.
 
-If you want to configure the library, you can tell the Angular 2 Dependency Injection (and this way also this library) about your own options. To do so, provide the highest component of your application (root component) with your custom configuration.
-
-``` typescript
-import { NotifierGlobalOptions, provideNotifierOptions } from 'angular2-notifier';
-
-const myNotifierConfiguration: NotifierGlobalOptions = {
-	// You custom options in here
-};
-
-@Component( {
-	providers: [
-		provideNotifierOptions( myNotifierConfiguration )
-	]
-} )
-export class AppComponent {
-	// Implementation details
-}
-```
-
-Or, **alternatively**, provide your custom configuration within your bootstrap process:
+If you want to configure the library, you can tell the Angular 2 Dependency Injection (and this way also this library) about your own options. To do so, provide your custom configuration within your bootstrap process:
 
 ````typescript
 import { NotifierGlobalOptions, provideNotifierOptions } from 'angular2-notifier';
@@ -476,7 +442,7 @@ animations: {
 
 		/**
 		 * Defines the animation offset, used when clearing out all notifications.
-		 * @type {Number} - '0' to disable, number to enable in ms.
+		 * @type {Number|Boolean} - 'false' to disable, number to enable in ms.
 		 */
 		offset: 50
 

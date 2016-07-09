@@ -15,6 +15,42 @@ import { NotifierGlobalOptions } from './notifier-global-options.model';
 export class NotifierGlobalConfig implements NotifierGlobalOptions {
 
 	/**
+	 * Animations
+	 */
+	public animations: {
+		clear: {
+			offset: number|boolean;
+		};
+		enabled: boolean;
+		hide: {
+			duration: number;
+			easing: string;
+			method: string;
+		};
+		shift: {
+			duration: number;
+			easing: string;
+		};
+		show: {
+			duration: number;
+			easing: string;
+			method: string;
+		};
+	};
+
+	/**
+	 * Behaviour
+	 */
+	public behaviour: {
+		autoHide: number|boolean;
+		pauseOnMouseover: boolean;
+		resetOnMouseover: boolean;
+		dismissOnClick: boolean;
+		stacking: number|boolean;
+		showDismissButton: boolean;
+	};
+
+	/**
 	 * Notification position
 	 */
 	public position: {
@@ -33,42 +69,6 @@ export class NotifierGlobalConfig implements NotifierGlobalOptions {
 	 * Notification theme (class)
 	 */
 	public theme: string;
-
-	/**
-	 * Behaviour
-	 */
-	public behaviour: {
-		autoHide: number|boolean;
-		pauseOnMouseover: boolean;
-		resetOnMouseover: boolean;
-		dismissOnClick: boolean;
-		stacking: number|boolean;
-		showDismissButton: boolean;
-	};
-
-	/**
-	 * Animations
-	 */
-	public animations: {
-		clear: {
-			offset: number;
-		};
-		enabled: boolean;
-		hide: {
-			duration: number;
-			easing: string;
-			method: string;
-		};
-		shift: {
-			duration: number;
-			easing: string;
-		};
-		show: {
-			duration: number;
-			easing: string;
-			method: string;
-		};
-	};
 
 	/**
 	 * Constructor

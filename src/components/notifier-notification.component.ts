@@ -19,7 +19,8 @@ import { NotifierTimerService } from './../services/notifier-timer.service';
 @Component( {
 	host: {
 		'(mouseover)': 'onMouseover()',
-		'(mouseout)': 'onMouseout()'
+		'(mouseout)': 'onMouseout()',
+		'(click)': 'onClick()'
 	},
 	providers: [
 		NotifierTimerService // Providing the service here allows us to use one timer service per notification
@@ -128,6 +129,27 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	}
 
 	/**
+	 * Get component config
+	 */
+	public getConfig(): NotifierGlobalConfig {
+		return this.config;
+	}
+
+	/**
+	 * Get current component height
+	 */
+	public getCurrentHeight(): number {
+		return this.currentHeight;
+	}
+
+	/**
+	 * Get current component shift
+	 */
+	public getCurrentShift(): number {
+		return this.currentShift;
+	}
+
+	/**
 	 * Show this notification component by animating it in
 	 * @return {Promise<any>} Promise, resolved when finished
 	 */
@@ -141,7 +163,7 @@ export class NotifierNotificationComponent implements AfterViewInit {
 
 			// Get our animation preset
 			const animationPreset: NotifierAnimation = this.notifierAnimationService.getAnimation(
-				this.config.animations.show.method, 'in' );
+				this.config.animations.show.method, 'in', this );
 
 			// Prepare element for animation (prevent flickering), then animate the bastart in
 			for ( let key in animationPreset.keyframes[ 0 ] ) {
@@ -151,13 +173,10 @@ export class NotifierNotificationComponent implements AfterViewInit {
 			return this.element.animate( animationPreset.keyframes, animationPreset.options ).finished;
 
 		} else {
-
-			// Move the bastard in
-			this.renderer.setElementStyle( this.element, 'visibility', 'visible' );
 			return new Promise<any>( ( resolve: Function, reject: Function ) => {
+				this.renderer.setElementStyle( this.element, 'visibility', 'visible' );
 				resolve();
 			} );
-
 		}
 
 	}
@@ -174,11 +193,11 @@ export class NotifierNotificationComponent implements AfterViewInit {
 		// Decision: Are animations enabled / or not?
 		if ( this.config.animations.enabled ) {
 			const animationPreset: NotifierAnimation = this.notifierAnimationService.getAnimation(
-				this.config.animations.hide.method, 'out' );
+				this.config.animations.hide.method, 'out', this );
 			return this.element.animate( animationPreset.keyframes, animationPreset.options ).finished;
 		} else {
 			return new Promise<any>( ( resolve: Function, reject: Function ) => {
-				resolve( null );
+				resolve();
 			} );
 		}
 
@@ -232,15 +251,14 @@ export class NotifierNotificationComponent implements AfterViewInit {
 					fill: 'forwards' // Keep the new state after the animation finished
 				}
 			);
-
-			// Update shift, return
 			this.currentShift = newShift;
 			return animation.finished; // Return finished Promise (no callbacks ... yay!)
 
 		} else {
-			this.renderer.setElementStyle( this.element, 'transform', `translate3d( ${ base }, ${ newShift }px, 0 )` );
 			return new Promise<any>( ( resolve: Function, reject: Function ) => {
-				resolve( null );
+				this.renderer.setElementStyle( this.element, 'transform', `translate3d( ${ base }, ${ newShift }px, 0 )` );
+				this.currentShift = newShift;
+				resolve();
 			} );
 		}
 
@@ -342,6 +360,15 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	private onMouseout(): void {
 		if ( this.config.behaviour.pauseOnMouseover || this.config.behaviour.resetOnMouseover ) {
 			this.runTimer();
+		}
+	}
+
+	/**
+	 * Event handler: Call this function when we click on the notification
+	 */
+	private onClick(): void {
+		if ( this.config.behaviour.dismissOnClick ) {
+			this.onDismiss();
 		}
 	}
 
