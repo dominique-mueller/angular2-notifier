@@ -4,18 +4,19 @@
 import { Injectable } from '@angular/core';
 
 /**
- * Notifier timer service (TODO)
+ * Notifier timer service
+ * This service contains all functionality for creating a timer and start / resume / stop it
  */
 @Injectable()
 export class NotifierTimerService {
 
 	/**
-	 * Time at this moment
+	 * Time at this moment (timestamp)
 	 */
 	private now: number;
 
 	/**
-	 * Remaining timer countdown
+	 * Remaining timer countdown (timestamp)
 	 */
 	private remaining: number;
 

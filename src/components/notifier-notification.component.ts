@@ -8,11 +8,13 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Optional, Ou
  */
 import { NotifierNotification } from './../models/notifier-notification.model';
 import { NotifierGlobalConfig } from './../models/notifier-global-config.model';
-import { NotifierAnimationService, NotifierAnimation } from './../services/notifier-animations.service';
+import { NotifierAnimation } from './../models/notifier-animation.model';
+import { NotifierAnimationService } from './../services/notifier-animations.service';
 import { NotifierTimerService } from './../services/notifier-timer.service';
 
 /**
- * Notifier notification component (TODO)
+ * Notifier notification component
+ * This component displays the actual notification, and also handles interactions with it
  */
 @Component( {
 	host: {
@@ -54,47 +56,50 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	private dismiss: EventEmitter<NotifierNotificationComponent>;
 
 	/**
-	 * Internal: Renderer reference
+	 * Renderer reference
 	 */
 	private renderer: Renderer;
 
 	/**
-	 * Internal: Notifier animation service reference
+	 * Notifier animation service reference
 	 */
 	private notifierAnimationService: NotifierAnimationService;
 
 	/**
-	 * Internal: Notifier timer service reference
+	 * Notifier timer service reference
 	 */
 	private notifierTimerService: NotifierTimerService;
 
 	/**
-	 * Internal: Global notifier config
+	 * Global notifier config
 	 */
 	private config: NotifierGlobalConfig;
 
 	/**
-	 * Internal: DOM element reference
+	 * DOM element reference
 	 */
-	private element: any; // It's kind of a 'HTMLElement' ... but ... no one knows for sure ...
+	private element: any; // It's kind of a 'HTMLElement' ... but at the same time it's not ... at least not 100% ...
 
 	/**
-	 * Internal: Current (calculated) height (#perfmatters)
+	 * Current (calculated) height (#perfmatters)
 	 */
 	private currentHeight: number;
 
 	/**
-	 * Internal: Current shift position (#perfmatters)
+	 * Current shift position (#perfmatters)
 	 */
 	private currentShift: number;
 
 	/**
 	 * Constructor
+	 * @param {ElementRef}               elementRef               Reference of this element
+	 * @param {Renderer}                 renderer                 Renderer
+	 * @param {NotifierAnimationService} notifierAnimationService Notifier animation service
+	 * @param {NotifierTimerService}     notifierTimerService     Notifier timer service
+	 * @param {NotifierGlobalConfig}     notifierGlobalConfig     Global notifier configuration
 	 */
-	public constructor( elementRef: ElementRef, renderer: Renderer, @Optional() notifierGlobalConfig: NotifierGlobalConfig,
-		notifierAnimationService: NotifierAnimationService, notifierTimerService: NotifierTimerService ) {
-
-		// Setup
+	public constructor( elementRef: ElementRef, renderer: Renderer, notifierAnimationService: NotifierAnimationService,
+		notifierTimerService: NotifierTimerService, @Optional() notifierGlobalConfig: NotifierGlobalConfig ) {
 		this.notifierAnimationService = notifierAnimationService;
 		this.notifierTimerService = notifierTimerService;
 		this.renderer = renderer;
@@ -104,11 +109,10 @@ export class NotifierNotificationComponent implements AfterViewInit {
 		this.dismiss = new EventEmitter<NotifierNotificationComponent>();
 		this.currentHeight = 0;
 		this.currentShift = 0;
-
 	}
 
 	/**
-	 * Initial setup (only once)
+	 * Initial setup (executed only once)
 	 */
 	public ngAfterViewInit(): void {
 		this.setup();
@@ -124,38 +128,34 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	}
 
 	/**
-	 * Animate this notification component in
+	 * Show this notification component by animating it in
+	 * @return {Promise<any>} Promise, resolved when finished
 	 */
 	public show(): Promise<any> {
 
-		// First, check if animations are enabled
+		// Start the timer
+		this.runTimer();
+
+		// Decision: Are animations enabled / or not?
 		if ( this.config.animations.enabled ) {
 
 			// Get our animation preset
 			const animationPreset: NotifierAnimation = this.notifierAnimationService.getAnimation(
 				this.config.animations.show.method, 'in' );
 
-			// Prepare element for animation before making it visible (in order to preven flickering)
+			// Prepare element for animation (prevent flickering), then animate the bastart in
 			for ( let key in animationPreset.keyframes[ 0 ] ) {
 				this.renderer.setElementStyle( this.element, key, animationPreset.keyframes[ 0 ][ key ] );
 			}
 			this.renderer.setElementStyle( this.element, 'visibility', 'visible' );
-
-			// Start timer
-			this.runTimer();
-
-			// Finally, let's animate the bastard in (and return a fancy finished promise)
 			return this.element.animate( animationPreset.keyframes, animationPreset.options ).finished;
 
 		} else {
 
-			// Start timer
-			this.runTimer();
-
 			// Move the bastard in
 			this.renderer.setElementStyle( this.element, 'visibility', 'visible' );
 			return new Promise<any>( ( resolve: Function, reject: Function ) => {
-				resolve( null );
+				resolve();
 			} );
 
 		}
@@ -163,21 +163,19 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	}
 
 	/**
-	 * Animate this notification component out
+	 * Hide this notification component by animating it out
+	 * @return {Promise<any>} Promise, resolved when finished
 	 */
 	public hide(): Promise<any> {
 
 		// Stop the timer
 		this.stopTimer();
 
-		// First, check if animations are enabled
+		// Decision: Are animations enabled / or not?
 		if ( this.config.animations.enabled ) {
-
-			// Get our animation preset, then animate the bastard in
 			const animationPreset: NotifierAnimation = this.notifierAnimationService.getAnimation(
 				this.config.animations.hide.method, 'out' );
 			return this.element.animate( animationPreset.keyframes, animationPreset.options ).finished;
-
 		} else {
 			return new Promise<any>( ( resolve: Function, reject: Function ) => {
 				resolve( null );
@@ -188,6 +186,9 @@ export class NotifierNotificationComponent implements AfterViewInit {
 
 	/**
 	 * Shift this notification component vertically
+	 * @param  {number}       value       Distance to shift, in px
+	 * @param  {boolean}      toMakePlace Shift direction
+	 * @return {Promise<any>}             Promise, resolved when finished
 	 */
 	public shift( value: number, toMakePlace: boolean ): Promise<any> {
 
@@ -211,7 +212,7 @@ export class NotifierNotificationComponent implements AfterViewInit {
 		}
 		const base: string = this.config.position.horizontal.position === 'middle' ? '-50%' : '0';
 
-		// Then, check if animations are enabled
+		// Decision: Are animations enabled / or not?
 		if ( this.config.animations.enabled ) {
 
 			// Let's shift the notification around
@@ -317,15 +318,15 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	/* tslint:disable:no-unused-variable - because the functions are only called by the template / annotation */
 
 	/**
-	 * Call this function when we click on the notification
+	 * Event handler: Call this function when we click on the notification
 	 */
-	private onDismiss( target: any ): void {
+	private onDismiss(): void {
 		this.stopTimer();
-		this.dismiss.emit( this ); // Time is up
+		this.dismiss.emit( this );
 	}
 
 	/**
-	 * Call this function when we hover over the notification area
+	 * Event handler: Call this function when we hover over the notification area
 	 */
 	private onMouseover(): void {
 		if ( this.config.behaviour.pauseOnMouseover ) {
@@ -336,7 +337,7 @@ export class NotifierNotificationComponent implements AfterViewInit {
 	}
 
 	/**
-	 * Call this function when we no longer hover over the notification area
+	 * Event handler: Call this function when we no longer hover over the notification area
 	 */
 	private onMouseout(): void {
 		if ( this.config.behaviour.pauseOnMouseover || this.config.behaviour.resetOnMouseover ) {

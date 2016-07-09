@@ -13,7 +13,8 @@ import { NotifierAnimationService } from './../services/notifier-animations.serv
 import { NotifierNotificationComponent } from './notifier-notification.component';
 
 /**
- * Notifier container component (TODO)
+ * Notifier container component
+ * This component manages all notifications asynchonously
  */
 @Component( {
 	directives: [
@@ -39,34 +40,42 @@ import { NotifierNotificationComponent } from './notifier-notification.component
 export class NotifierContainerComponent {
 
 	/**
-	 * Internal: Global notifier config
+	 * Global notifier config
 	 */
 	private config: NotifierGlobalConfig;
 
 	/**
-	 * Internal: List of currently opened notifications
+	 * List of currently opened notifications
 	 */
 	private notifications: Array<NotifierNotification>;
 
 	/**
-	 * Internal: Action queue (prevent weirdness when stuff happens at the same time)
+	 * Action queue, enables the processing of actions synchonously
 	 */
 	private queue: {
+
+		/**
+		 * List of unfinished actions
+		 */
 		actions: Array<NotifierAction>;
+
+		/**
+		 * Progress flag, prevents that multiple actions will be process at the same time
+		 */
 		inProgress: boolean;
+
 	};
 
 	/**
-	 * Internal: Promise resolve function, when adding a notification
+	 * Promise resolve function, when adding a notification (special case)
 	 */
 	private tempNotificationResolver: Function;
 
 	/**
 	 * Constructor
+	 * @param {NotifierGlobalConfig} notifierGlobalConfig Global notifier configuration
 	 */
 	public constructor( @Optional() notifierGlobalConfig: NotifierGlobalConfig ) {
-
-		// Setup
 		this.config = notifierGlobalConfig === null ? new NotifierGlobalConfig() : notifierGlobalConfig;
 		this.notifications = [];
 		this.queue = {
@@ -74,11 +83,10 @@ export class NotifierContainerComponent {
 			inProgress: false
 		};
 		this.tempNotificationResolver = null;
-
 	}
 
 	/**
-	 * Run an action; this should be the one and only entry point of this component
+	 * Run an action; this is the one and only entry point of this component
 	 * @param  {NotifierAction} action Action
 	 * @return {Promise<any>}          Promise, resolved when finished
 	 */
@@ -228,8 +236,8 @@ export class NotifierContainerComponent {
 
 	/**
 	 * Remove one notification
-	 * @param  {NotifierNotificationComponent} notificationComponent [description]
-	 * @return {Promise<any>}                                        [description]
+	 * @param  {NotifierNotificationComponent} notificationComponent Notification component
+	 * @return {Promise<any>}                                        Promise, resolved when finished
 	 */
 	private removeNotification( notificationComponent: NotifierNotificationComponent ): Promise<any> {
 		return new Promise<any>( ( resolve: Function, reject: Function ) => {

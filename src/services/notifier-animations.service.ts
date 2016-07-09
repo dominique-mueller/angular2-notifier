@@ -6,31 +6,34 @@ import { Injectable, Optional } from '@angular/core';
 /**
  * Internal imports
  */
+import { NotifierAnimation } from './../models/notifier-animation.model';
+import { NotifierAnimationPreset } from './../models/notifier-animation-preset.model';
 import { NotifierGlobalConfig } from './../models/notifier-global-config.model';
 
 /**
- * Notifier animation service (TODO)
+ * Notifier animation service
+ * This service provides all animation presets
  */
 @Injectable()
 export class NotifierAnimationService {
 
 	/**
-	 * Internal: Global notifier config
+	 * Global notifier config
 	 */
 	private config: NotifierGlobalConfig;
 
 	/**
-	 * Animation presets
+	 * List of all animation presets, each with one name and both directions ('in' and 'out')
 	 */
 	private animationPresets: {
-		[ method: string ]: {
+		[ name: string ]: {
 			[ way: string ]: ( options: NotifierGlobalConfig ) => NotifierAnimationPreset
 		};
 	};
 
 	/**
-	 * Constructor, sets up config and animation presets
-	 * @param {NotifierService} notifierService Notifier service
+	 * Constructor
+	 * @param {NotifierGlobalConfig} notifierGlobalConfig Global notifier configuration
 	 */
 	public constructor( @Optional() notifierGlobalConfig: NotifierGlobalConfig ) {
 		this.config = notifierGlobalConfig === null ? new NotifierGlobalConfig() : notifierGlobalConfig;
@@ -38,7 +41,10 @@ export class NotifierAnimationService {
 	}
 
 	/**
-	 * Get animation
+	 * Get animation preset, result follows the Web Animations API syntax
+	 * @param  {string}            name Animation method name
+	 * @param  {string}            way  Animation way, either 'in' or 'out'
+	 * @return {NotifierAnimation}      Notifier animation preset
 	 */
 	public getAnimation( name: string, way: string ): NotifierAnimation {
 
@@ -68,11 +74,9 @@ export class NotifierAnimationService {
 	}
 
 	/**
-	 * Initial animation preset setup
+	 * Initial setup, adding all default animation presets to the service
 	 */
 	private setupAnimationPresets(): void {
-
-		// Setup animation presets
 		this.animationPresets = {
 
 			fade: {
@@ -201,26 +205,4 @@ export class NotifierAnimationService {
 
 		};
 	};
-
-}
-
-/**
- * Notifier animation
- */
-export interface NotifierAnimation {
-	keyframes: Array<any>;
-	options: {
-		delay: number;
-		duration: number;
-		easing: string;
-		fill: string;
-	};
-}
-
-/**
- * Notifier animation preset
- */
-export interface NotifierAnimationPreset {
-	from: Object;
-	to: Object;
 }

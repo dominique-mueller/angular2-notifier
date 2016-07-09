@@ -12,21 +12,21 @@ import { NotifierNotification } from './../models/notifier-notification.model';
 import { NotifierContainerComponent } from './../components/notifier-container.component';
 
 /**
- * Notifier service (TODO)
+ * Notifier service
+ * This service works as the public API of this library
  */
 @Injectable()
 export class NotifierService {
 
 	/**
-	 * Internal: Notifier component
+	 * Notifier component
 	 */
 	private notifierContainer: NotifierContainerComponent;
 
 	/**
-	 * Constructor, sets up global configuration and loads the notifier container component into the app
-	 * @param {ApplicationRef}       applicationRef       Application
-	 * @param {ComponentResolver}    componentResolver    Component resolver
-	 * @param {NotifierGlobalConfig} notifierGlobalConfig Global notifier config, coming from provider
+	 * Constructor
+	 * @param {ApplicationRef}    applicationRef    Application
+	 * @param {ComponentResolver} componentResolver Component resolver
 	 */
 	public constructor( applicationRef: ApplicationRef, componentResolver: ComponentResolver ) {
 
