@@ -23,15 +23,19 @@ You can play around with this library on the **[Plunkr project right here](http:
 
 ## Content
 
-- **[How to install](#how-to-install)**<br>Download via npm, setup in SystemJS
+Learn about this library and how you can use:
 
-- **[How to setup](#how-to-setup)**<br>Setup in Angular 2 application, include styles
+- **[How to install](#how-to-install)**<br>Download via npm, configure for SystemJS
 
-- **[How to use](#how-to-use)**<br>Show notifications, clear notifications
+- **[How to setup](#how-to-setup)**<br>Setup within your Angular 2 application, include SASS / CSS styles
+
+- **[How to use](#how-to-use)**<br>Show notifications, clear (all or some) notifications
 
 - **[How to configure](#how-to-configure)**<br>Customize how notifications look, behave and animate
 
-> Moreover, you can take a look at the **[Changelog](/CHANGELOG.md)** as well as at the **[MIT License](/LICENSE)**.
+- **[Planed features](#planed-features)**<br>A lot more is coming ... read it and give feedback!
+
+Moreover, you can take a look at the **[Changelog](/CHANGELOG.md)** as well as at the **[MIT License](/LICENSE)**. Or **[learn about me](#creator)**.
 
 <br><br>
 
@@ -508,3 +512,30 @@ const notifierDefaultOptions: NotifierGlobalOptions = {
 	}
 };
 ```
+
+<br><br>
+
+## Planed features
+
+There are lots of possible enhancements or new features that would be awesome to have in this library. Some examples are:
+
+- Automated tests
+- HTML templates as messages
+- Notification symbol (e.g. checkmark, cross, custom icon / image ...)
+- Custom animation presets
+- Local notification options, including callback functions
+- Enhanced stacking (e.g. document size as limit, negative values, ...)
+- Generate bundles
+- More modularity (so that people can use only the parts they need)
+
+> You can't wait for one of these features? Or have some new ideas? Let me know by **[creating an issue](https://github.com/dominique-mueller/angular2-notifier/issues/new)**.
+
+<br><br>
+
+## Creator
+
+**Dominique Müller**
+
+- E-Mail: [dominique.m.mueller@gmail.com](mailto:dominique.m.mueller@gmail.com)
+- Website: [www.dominique-mueller.de](https://www.dominique-mueller.de)
+- Twitter: [@itsdevdom](https://twitter.com/itsdevdom)
