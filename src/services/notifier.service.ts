@@ -9,11 +9,12 @@ import { ComponentRef_ } from '@angular/core/src/linker/component_factory';
  * Internal imports
  */
 import { NotifierNotification } from './../models/notifier-notification.model';
+import { SHOW, CLEAR_ALL, CLEAR_NEWEST, CLEAR_OLDEST } from './../models/notifier-action.model';
 import { NotifierContainerComponent } from './../components/notifier-container.component';
 
 /**
  * Notifier service
- * This service works as the public API of this library
+ * This service works as the public API of this library, and also like a bridge between the components
  */
 @Injectable()
 export class NotifierService {
@@ -61,7 +62,7 @@ export class NotifierService {
 	public notify( type: string, message: string ): Promise<any> {
 		return this.notifierContainer.doAction( {
 			payload: new NotifierNotification( type, message ),
-			type: 'SHOW'
+			type: SHOW
 		} );
 	}
 
@@ -116,7 +117,7 @@ export class NotifierService {
 	 */
 	public clearAll(): Promise<any> {
 		return this.notifierContainer.doAction( {
-			type: 'CLEAR_ALL'
+			type: CLEAR_ALL
 		} );
 	}
 
@@ -126,7 +127,7 @@ export class NotifierService {
 	 */
 	public clearOldest(): Promise<any> {
 		return this.notifierContainer.doAction( {
-			type: 'CLEAR_OLDEST'
+			type: CLEAR_OLDEST
 		} );
 	}
 
@@ -136,7 +137,7 @@ export class NotifierService {
 	 */
 	public clearNewest(): Promise<any> {
 		return this.notifierContainer.doAction( {
-			type: 'CLEAR_NEWEST'
+			type: CLEAR_NEWEST
 		} );
 	}
 

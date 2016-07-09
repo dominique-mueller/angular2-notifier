@@ -8,7 +8,7 @@ import { Component, Optional } from '@angular/core';
  */
 import { NotifierNotification } from './../models/notifier-notification.model';
 import { NotifierGlobalConfig } from './../models/notifier-global-config.model';
-import { NotifierAction } from './../models/notifier-action.model';
+import { NotifierAction, SHOW, HIDE, CLEAR_ALL, CLEAR_NEWEST, CLEAR_OLDEST } from './../models/notifier-action.model';
 import { NotifierAnimationService } from './../services/notifier-animations.service';
 import { NotifierNotificationComponent } from './notifier-notification.component';
 
@@ -113,7 +113,7 @@ export class NotifierContainerComponent {
 			switch ( action.type ) {
 
 				// Show a new notification
-				case 'SHOW':
+				case SHOW:
 					this.addNotification( action.payload )
 						.then( () => {
 							action.resolve(); // DONE
@@ -123,7 +123,7 @@ export class NotifierContainerComponent {
 					break;
 
 				// Hide an existing notification
-				case 'HIDE':
+				case HIDE:
 					this.removeNotification( action.payload )
 						.then( () => {
 							action.resolve(); // DONE
@@ -133,9 +133,11 @@ export class NotifierContainerComponent {
 					break;
 
 				// Clear all notifications
-				case 'CLEAR_ALL':
+				case CLEAR_ALL:
 					if ( this.notifications.length === 0 ) {
 						action.resolve(); // DONE
+						this.queue.inProgress = false;
+						this.doNextActionInQueue(); // Recursion ...
 					} else {
 						this.removeAllNotifications()
 							.then( () => {
@@ -147,9 +149,11 @@ export class NotifierContainerComponent {
 					break;
 
 				// Clear all notifications
-				case 'CLEAR_OLDEST':
+				case CLEAR_OLDEST:
 					if ( this.notifications.length === 0 ) {
 						action.resolve(); // DONE
+						this.queue.inProgress = false;
+						this.doNextActionInQueue(); // Recursion ...
 					} else {
 						this.removeNotification( this.notifications[ 0 ].component )
 							.then( () => {
@@ -161,9 +165,11 @@ export class NotifierContainerComponent {
 					break;
 
 				// Clear all notifications
-				case 'CLEAR_NEWEST':
+				case CLEAR_NEWEST:
 					if ( this.notifications.length === 0 ) {
 						action.resolve(); // DONE
+						this.queue.inProgress = false;
+						this.doNextActionInQueue(); // Recursion ...
 					} else {
 						this.removeNotification( this.notifications[ this.notifications.length - 1 ].component )
 							.then( () => {
@@ -376,7 +382,7 @@ export class NotifierContainerComponent {
 	private onDismiss( notificationComponent: NotifierNotificationComponent ): void {
 		this.doAction( {
 			payload: notificationComponent,
-			type: 'HIDE'
+			type: HIDE
 		} );
 	}
 
