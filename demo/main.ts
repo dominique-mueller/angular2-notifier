@@ -21,7 +21,7 @@ const myNotifierOptions: NotifierGlobalOptions = {
 		hide: {
 			duration: 300,
 			easing: 'ease',
-			method: 'slide'
+			method: 'fade'
 		},
 		shift: {
 			duration: 300,
@@ -34,7 +34,7 @@ const myNotifierOptions: NotifierGlobalOptions = {
 		}
 	},
 	behaviour: {
-		autoHide: 5000,
+		autoHide: false,
 		dismissOnClick: false,
 		pauseOnMouseover: true,
 		resetOnMouseover: false,
