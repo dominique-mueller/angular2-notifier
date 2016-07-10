@@ -9,13 +9,15 @@
 
 A well designed, fully animated, highly customizable and easy to use notification library for your Angular 2 application.
 
-> Please note that this library is still in an early stage, it will hit version 1.0 as soon as Angular 2 reaches its final version. Therefore, as long as Angular 2 is in RC, new releases before 1.0 might introduce breaking changes. They will be documented in the [changelog](/CHANGELOG.md).
+**This library is compatible with Angular 2.0.0-RC.4** (and may work in earlier RC versions).
+
+> *Please note that this library is still in an early stage, it will hit version 1.0 as soon as Angular 2 reaches its final version. Therefore, as long as Angular 2 is still in RC, new minor releases before 1.0 (like 0.x) might introduce breaking changes. They will be documented in the [Changelog](/CHANGELOG.md).*
 
 <br>
 
 ## Demo
 
-You can play around with this library on the **[Plunkr project right here](http://plnkr.co/edit/Z8yu8I)**.
+You can test and play around with this library on **[this Plunker right here](http://plnkr.co/edit/Z8yu8I)**.
 
 ![Preview](/docs/preview.gif?raw=true)
 
@@ -519,10 +521,12 @@ const notifierDefaultOptions: NotifierGlobalOptions = {
 
 There are lots of possible enhancements or new features that would be awesome to have in this library. Some examples are:
 
+- Add pull request template and contributing guidelines
 - Automated tests
 - HTML templates as messages
 - Notification symbol (e.g. checkmark, cross, custom icon / image ...)
 - Custom animation presets
+- More provided themes
 - Local notification options, including callback functions
 - Enhanced stacking (e.g. document size as limit, negative values, ...)
 - Generate bundles
