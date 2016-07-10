@@ -14,6 +14,8 @@ gulp.task( 'typescript:lint', () => {
 		.src( [
 			'./src/**/*.ts'
 		] )
-		.pipe( tslint() )
-		.pipe( tslint.report( 'verbose' ) );
+		.pipe( tslint( {
+			formatter: 'verbose'
+		} ) )
+		.pipe( tslint.report() );
 } );

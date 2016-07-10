@@ -4,7 +4,6 @@
  * Gulp imports
  */
 const autoprefixer = require( 'gulp-autoprefixer' );
-const browserSync = require( 'browser-sync' );
 const gulp = require( 'gulp' );
 const sass = require( 'gulp-sass' );
 
@@ -23,6 +22,5 @@ gulp.task( 'sass:build', () => {
 			} ).on( 'error', sass.logError ) // Show errors
 		)
 		.pipe( autoprefixer() ) // Autoprefix
-		.pipe( gulp.dest( './styles' ) ) // Same folder structure
-		.pipe( browserSync.stream( { once: true } ) );
+		.pipe( gulp.dest( './styles' ) ); // Same folder structure
 } );

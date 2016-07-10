@@ -1,20 +1,23 @@
 # Dependencies
-node_modules
-typings
+/node_modules
+/typings
 
-# Build
-index.js
-src/**/*.js
-styles/**/*.css
-demo/*.js
+# Project build
+/index.js
+/index.js.map
+/index.d.ts
+/src/**/*.js
+/src/**/*.js.map
+/src/**/*.d.ts
+/styles/**/*.css
+
+# Demo build
+/demo/*.js
+!/demo/systemjs.config.js
 
 # Log files
+/npm-debug.log
 *.log
-npm-debug.log
-undefinederror.json
-undefinedinfo.json
-info.log.json
-error.log.json
 
 # Editor settings
 *.sublime-workspace

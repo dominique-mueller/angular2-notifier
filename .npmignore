@@ -1,14 +1,29 @@
 # Dependencies
-node_modules
-typings
+/node_modules
+/typings
+
+# Development
+/index.ts
+/src/**/*.ts
+!/src/**/*.d.ts
+
+# Build process and CI
+/gulp-tasks
+/.nvmrc
+/.sass-lint.yml
+/.travis.yml
+/browserlist
+/gulpfile.js
+/tsconfig.json
+/tslint.json
+/typings.json
+
+# Demo
+/demo
 
 # Log files
+/npm-debug.log
 *.log
-npm-debug.log
-undefinederror.json
-undefinedinfo.json
-info.log.json
-error.log.json
 
 # Editor settings
 *.sublime-workspace

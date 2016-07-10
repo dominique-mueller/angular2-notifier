@@ -66,8 +66,9 @@ gulp.task( 'watch',
 			// Setup browser-sync
 			browserSync.init( {
 				server: {
-					baseDir: './' // Because we need access to the node_modules folder,
+					baseDir: './' // Because we need access to the node_modules folder
 				},
+				startPath: '/demo',
 				logPrefix: 'BrowserSync',
 				logConnections: true,
 				notify: {
@@ -83,11 +84,34 @@ gulp.task( 'watch',
 			} );
 
 			// Watch project files
-			gulp.watch( [ './src/**/*.ts', './index.ts' ], gulp.series( 'typescript:build' ) );
-			gulp.watch( [ './styles/**/*.scss' ], gulp.series( 'sass:build' ) );
+			gulp.watch( [
+				'./src/**/*.ts',
+				'./index.ts'
+			], gulp.series( [
+				'typescript:build',
+				browserSync.reload
+			] ) );
+			gulp.watch( [
+				'./styles/**/*.scss'
+			], gulp.series( [
+				'sass:build',
+				browserSync.reload
+			] ) );
 
 			// Watch demo files
-			gulp.watch( [ './demo/*.ts' ], gulp.series( [ 'typescript:build--demo' ] ) );
+			gulp.watch( [
+				'./demo/*.ts'
+			], gulp.series( [
+				'typescript:build--demo',
+				browserSync.reload
+			] ) );
+			gulp.watch( [
+				'./demo/index.html',
+				'./demo/style.css',
+				'./demo/systemjs.config.js'
+			], gulp.series( [
+				browserSync.reload
+			] ) );
 
 		}
 	] )
