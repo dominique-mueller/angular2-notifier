@@ -1,0 +1,17 @@
+// STYLES
+// This file imports ALL available styles
+// For performance and mainainability reasons, you should only include and use the files you actually need
+// Sidenote: We do NOT use partials and explicitely define the file type so compiling works properly
+
+// Import core first
+@import "./core.scss";
+
+// Import all themes
+@import "./themes/theme-material.scss";
+
+// Import all types
+@import "./types/type-default.scss";
+@import "./types/type-error.scss";
+@import "./types/type-info.scss";
+@import "./types/type-success.scss";
+@import "./types/type-warning.scss";
