@@ -9,13 +9,15 @@
 
 A well designed, fully animated, highly customizable and easy to use notification library for your Angular 2 application.
 
-> Please note that this library is still in an early stage, it will hit version 1.0 as soon as Angular 2 reaches its final version. Therefore, as long as Angular 2 is in RC, new releases before 1.0 might introduce breaking changes. They will be documented in the [changelog](/CHANGELOG.md).
+**This library is compatible with Angular 2.0.0-RC.4** (and may work in earlier RC versions).
+
+> *Please note that this library is still in an early stage, it will hit version 1.0 as soon as Angular 2 reaches its final version. Therefore, as long as Angular 2 is still in RC, new minor releases before 1.0 (like 0.x) might introduce breaking changes. They will be documented in the [Changelog](/CHANGELOG.md).*
 
 <br>
 
 ## Demo
 
-You can play around with this library on the **[Plunkr project right here](http://plnkr.co/edit/Z8yu8I)**.
+You can test and play around with this library on **[this Plunker right here](http://plnkr.co/edit/Z8yu8I)**.
 
 ![Preview](/docs/preview.gif?raw=true)
 
@@ -23,15 +25,19 @@ You can play around with this library on the **[Plunkr project right here](http:
 
 ## Content
 
-- **[How to install](#how-to-install)**<br>Download via npm, setup in SystemJS
+Learn about this library and how you can use:
 
-- **[How to setup](#how-to-setup)**<br>Setup in Angular 2 application, include styles
+- **[How to install](#how-to-install)**<br>Download via npm, configure for SystemJS
 
-- **[How to use](#how-to-use)**<br>Show notifications, clear notifications
+- **[How to setup](#how-to-setup)**<br>Setup within your Angular 2 application, include SASS / CSS styles
+
+- **[How to use](#how-to-use)**<br>Show notifications, clear (all or some) notifications
 
 - **[How to configure](#how-to-configure)**<br>Customize how notifications look, behave and animate
 
-> Moreover, you can take a look at the **[Changelog](/CHANGELOG.md)** as well as at the **[MIT License](/LICENSE)**.
+- **[Planed features](#planed-features)**<br>A lot more is coming ... read it and give feedback!
+
+Moreover, you can take a look at the **[Changelog](/CHANGELOG.md)** as well as at the **[MIT License](/LICENSE)**. Or **[learn about me](#creator)**.
 
 <br><br>
 
@@ -58,6 +64,13 @@ var packages = {
 };
 ```
 
+Depending on which browsers you want to support, you might need to use some of the following **polyfills**:
+
+- For ES6 features (especially Promises), you can use **[core-js](https://github.com/zloirock/core-js)**.
+- For animations (especially the Web Animations API), you can use **[web-animations-js](https://github.com/web-animations/web-animations-js)**.
+
+> Both polyfills are also officially recommended by the Angular 2 team.
+
 <br><br>
 
 ## How to setup
@@ -68,22 +81,7 @@ You need to setup the library in your Angular 2 application as well as include t
 
 ### Setup library in your Angular 2 application
 
-You need to tell the Angular 2 Dependency Injection about our library. To do so, provide the highest component of your application (root component) with the `Notifier Service`.
-
-``` typescript
-import { NotifierService } from 'angular2-notifier';
-
-@Component( {
-	providers: [
-		NotifierService
-	]
-} )
-export class AppComponent {
-	// Implementation details
-}
-```
-
-Or, **alternatively**, provide the `Notifier Service` within your bootstrap process:
+You need to tell the Angular 2 Dependency Injection about our library. To do so, provide the `Notifier Service` within your bootstrap process (or alternatively in the highest component you have):
 
 ````typescript
 import { NotifierService } from 'angular2-notifier';
@@ -243,26 +241,7 @@ This library is fully customizable, so it works the way you want it to and it bl
 
 > Note: This step is additional to the setup step, so you still need to provide the `Notifier Service`.
 
-If you want to configure the library, you can tell the Angular 2 Dependency Injection (and this way also this library) about your own options. To do so, provide the highest component of your application (root component) with your custom configuration.
-
-``` typescript
-import { NotifierGlobalOptions, provideNotifierOptions } from 'angular2-notifier';
-
-const myNotifierConfiguration: NotifierGlobalOptions = {
-	// You custom options in here
-};
-
-@Component( {
-	providers: [
-		provideNotifierOptions( myNotifierConfiguration )
-	]
-} )
-export class AppComponent {
-	// Implementation details
-}
-```
-
-Or, **alternatively**, provide your custom configuration within your bootstrap process:
+If you want to configure the library, you can tell the Angular 2 Dependency Injection (and this way also this library) about your own options. To do so, provide your custom configuration within your bootstrap process:
 
 ````typescript
 import { NotifierGlobalOptions, provideNotifierOptions } from 'angular2-notifier';
@@ -476,7 +455,7 @@ animations: {
 
 		/**
 		 * Defines the animation offset, used when clearing out all notifications.
-		 * @type {Number} - '0' to disable, number to enable in ms.
+		 * @type {Number|Boolean} - 'false' to disable, number to enable in ms.
 		 */
 		offset: 50
 
@@ -535,3 +514,32 @@ const notifierDefaultOptions: NotifierGlobalOptions = {
 	}
 };
 ```
+
+<br><br>
+
+## Planed features
+
+There are lots of possible enhancements or new features that would be awesome to have in this library. Some examples are:
+
+- Add pull request template and contributing guidelines
+- Automated tests
+- HTML templates as messages
+- Notification symbol (e.g. checkmark, cross, custom icon / image ...)
+- Custom animation presets
+- More provided themes
+- Local notification options, including callback functions
+- Enhanced stacking (e.g. document size as limit, negative values, ...)
+- Generate bundles
+- More modularity (so that people can use only the parts they need)
+
+> You can't wait for one of these features? Or have some new ideas? Let me know by **[creating an issue](https://github.com/dominique-mueller/angular2-notifier/issues/new)**.
+
+<br><br>
+
+## Creator
+
+**Dominique Müller**
+
+- E-Mail: [dominique.m.mueller@gmail.com](mailto:dominique.m.mueller@gmail.com)
+- Website: [www.dominique-mueller.de](https://www.dominique-mueller.de)
+- Twitter: [@itsdevdom](https://twitter.com/itsdevdom)

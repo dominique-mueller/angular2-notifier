@@ -8,12 +8,13 @@ import { Component, Optional } from '@angular/core';
  */
 import { NotifierNotification } from './../models/notifier-notification.model';
 import { NotifierGlobalConfig } from './../models/notifier-global-config.model';
-import { NotifierAction } from './../models/notifier-action.model';
+import { NotifierAction, SHOW, HIDE, CLEAR_ALL, CLEAR_NEWEST, CLEAR_OLDEST } from './../models/notifier-action.model';
 import { NotifierAnimationService } from './../services/notifier-animations.service';
 import { NotifierNotificationComponent } from './notifier-notification.component';
 
 /**
- * Notifier container component (TODO)
+ * Notifier container component
+ * This component manages all notifications asynchonously
  */
 @Component( {
 	directives: [
@@ -39,34 +40,42 @@ import { NotifierNotificationComponent } from './notifier-notification.component
 export class NotifierContainerComponent {
 
 	/**
-	 * Internal: Global notifier config
+	 * Global notifier config
 	 */
 	private config: NotifierGlobalConfig;
 
 	/**
-	 * Internal: List of currently opened notifications
+	 * List of currently opened notifications
 	 */
 	private notifications: Array<NotifierNotification>;
 
 	/**
-	 * Internal: Action queue (prevent weirdness when stuff happens at the same time)
+	 * Action queue, enables the processing of actions synchonously
 	 */
 	private queue: {
+
+		/**
+		 * List of unfinished actions
+		 */
 		actions: Array<NotifierAction>;
+
+		/**
+		 * Progress flag, prevents that multiple actions will be process at the same time
+		 */
 		inProgress: boolean;
+
 	};
 
 	/**
-	 * Internal: Promise resolve function, when adding a notification
+	 * Promise resolve function, when adding a notification (special case)
 	 */
 	private tempNotificationResolver: Function;
 
 	/**
 	 * Constructor
+	 * @param {NotifierGlobalConfig} notifierGlobalConfig Global notifier configuration
 	 */
 	public constructor( @Optional() notifierGlobalConfig: NotifierGlobalConfig ) {
-
-		// Setup
 		this.config = notifierGlobalConfig === null ? new NotifierGlobalConfig() : notifierGlobalConfig;
 		this.notifications = [];
 		this.queue = {
@@ -74,11 +83,10 @@ export class NotifierContainerComponent {
 			inProgress: false
 		};
 		this.tempNotificationResolver = null;
-
 	}
 
 	/**
-	 * Run an action; this should be the one and only entry point of this component
+	 * Run an action; this is the one and only entry point of this component
 	 * @param  {NotifierAction} action Action
 	 * @return {Promise<any>}          Promise, resolved when finished
 	 */
@@ -105,7 +113,7 @@ export class NotifierContainerComponent {
 			switch ( action.type ) {
 
 				// Show a new notification
-				case 'SHOW':
+				case SHOW:
 					this.addNotification( action.payload )
 						.then( () => {
 							action.resolve(); // DONE
@@ -115,7 +123,7 @@ export class NotifierContainerComponent {
 					break;
 
 				// Hide an existing notification
-				case 'HIDE':
+				case HIDE:
 					this.removeNotification( action.payload )
 						.then( () => {
 							action.resolve(); // DONE
@@ -125,9 +133,11 @@ export class NotifierContainerComponent {
 					break;
 
 				// Clear all notifications
-				case 'CLEAR_ALL':
+				case CLEAR_ALL:
 					if ( this.notifications.length === 0 ) {
 						action.resolve(); // DONE
+						this.queue.inProgress = false;
+						this.doNextActionInQueue(); // Recursion ...
 					} else {
 						this.removeAllNotifications()
 							.then( () => {
@@ -139,9 +149,11 @@ export class NotifierContainerComponent {
 					break;
 
 				// Clear all notifications
-				case 'CLEAR_OLDEST':
+				case CLEAR_OLDEST:
 					if ( this.notifications.length === 0 ) {
 						action.resolve(); // DONE
+						this.queue.inProgress = false;
+						this.doNextActionInQueue(); // Recursion ...
 					} else {
 						this.removeNotification( this.notifications[ 0 ].component )
 							.then( () => {
@@ -153,9 +165,11 @@ export class NotifierContainerComponent {
 					break;
 
 				// Clear all notifications
-				case 'CLEAR_NEWEST':
+				case CLEAR_NEWEST:
 					if ( this.notifications.length === 0 ) {
 						action.resolve(); // DONE
+						this.queue.inProgress = false;
+						this.doNextActionInQueue(); // Recursion ...
 					} else {
 						this.removeNotification( this.notifications[ this.notifications.length - 1 ].component )
 							.then( () => {
@@ -192,19 +206,30 @@ export class NotifierContainerComponent {
 		return new Promise<any>( ( resolve: Function, reject: Function ) => {
 
 			// Decision: Remove them with animations / without animations?
-			if ( this.config.animations.enabled && this.config.animations.clear.offset > 0 ) {
+			if ( this.config.animations.enabled && this.config.animations.clear.offset !== false
+				&& this.config.animations.clear.offset > 0 ) {
 
 				// Hide all notifications, depending on vertical position and animation offset
 				for ( let i: number = this.notifications.length - 1; i >= 0; i-- ) {
 					let animationOffset: number = this.config.position.vertical.position === 'top'
-						? this.config.animations.clear.offset * ( this.notifications.length - i )
-						: this.config.animations.clear.offset * i;
+						? this.config.animations.clear.offset as number * ( this.notifications.length - i )
+						: this.config.animations.clear.offset as number * i;
 					setTimeout( () => { // Note: Promise.all() and setTimeout() hate each other ;)
 						this.notifications[ i ].component.hide().then( () => {
-							if ( i === 0 ) { // Remove all notifications when the last one got animated out
-								this.notifications = []; // Burn them ... muhaha ...
-								resolve(); // DONE
+
+							// Remove all notifications when the last one got animated out
+							if ( this.config.position.vertical.position === 'top' ) {
+								if ( i === 0 ) {
+									this.notifications = []; // Burn them ... muhaha ...
+									resolve(); // DONE
+								}
+							} else {
+								if ( i === this.notifications.length - 1 ) {
+									this.notifications = []; // Burn them ... muhaha ...
+									resolve(); // DONE
+								}
 							}
+
 						} );
 					}, animationOffset );
 				}
@@ -228,8 +253,8 @@ export class NotifierContainerComponent {
 
 	/**
 	 * Remove one notification
-	 * @param  {NotifierNotificationComponent} notificationComponent [description]
-	 * @return {Promise<any>}                                        [description]
+	 * @param  {NotifierNotificationComponent} notificationComponent Notification component
+	 * @return {Promise<any>}                                        Promise, resolved when finished
 	 */
 	private removeNotification( notificationComponent: NotifierNotificationComponent ): Promise<any> {
 		return new Promise<any>( ( resolve: Function, reject: Function ) => {
@@ -237,17 +262,27 @@ export class NotifierContainerComponent {
 			// Decision: Shift other notifications before hiding our one / just hide our notification?
 			if ( this.notifications.length > 1 ) {
 				this.animateOutNotification( notificationComponent );
-				setTimeout( () => { // Animation overlap
+				if ( this.config.animations.enabled ) {
+					setTimeout( () => { // Animation overlap
+						let index: number = this.getNotificationIndex( notificationComponent );
+						let notifications: Array<NotifierNotification> = this.notifications.slice( 0, index );
+						this.animateShiftNotifications( notifications, notificationComponent.getHeight(), false )
+							.then( () => {
+								resolve(); // DONE
+							} );
+					}, Math.round( this.config.animations.show.duration / 5 ) );
+				} else {
 					let index: number = this.getNotificationIndex( notificationComponent );
 					let notifications: Array<NotifierNotification> = this.notifications.slice( 0, index );
 					this.animateShiftNotifications( notifications, notificationComponent.getHeight(), false )
 						.then( () => {
 							resolve(); // DONE
 						} );
-				}, Math.round( this.config.animations.show.duration / 5 ) );
+				}
 			} else {
-				this.animateOutNotification( notificationComponent );
-				resolve(); // DONE
+				this.animateOutNotification( notificationComponent ).then( () => {
+					resolve(); // DONE
+				} );
 			}
 
 		} );
@@ -310,7 +345,7 @@ export class NotifierContainerComponent {
 		if ( this.notifications.length > 1 ) {
 
 			// Decision: Stacking enabled?
-			if ( this.config.behaviour.stacking === false ) {
+			if ( this.config.behaviour.stacking === false || this.config.behaviour.stacking < 2 ) {
 
 				// Hide the oldest notification, then show the new one
 				this.animateOutNotification( this.notifications[ 0 ].component ).then( () => {
@@ -368,7 +403,7 @@ export class NotifierContainerComponent {
 	private onDismiss( notificationComponent: NotifierNotificationComponent ): void {
 		this.doAction( {
 			payload: notificationComponent,
-			type: 'HIDE'
+			type: HIDE
 		} );
 	}
 
