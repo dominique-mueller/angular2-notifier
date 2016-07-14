@@ -1,4 +1,4 @@
-[![GitHub tag](https://img.shields.io/github/tag/dominique-mueller/angular2-notifier.svg?maxAge=2592000)](https://github.com/dominique-mueller/angular2-notifier/releases)
+[![GitHub release](https://img.shields.io/github/release/dominique-mueller/angular2-notifier.svg?maxAge=2592000)](https://github.com/dominique-mueller/angular2-notifier/releases)
 [![npm version](https://img.shields.io/npm/v/angular2-notifier.svg?maxAge=2592000)](https://www.npmjs.com/package/angular2-notifier)
 [![license](https://img.shields.io/npm/l/angular2-notifier.svg?maxAge=2592000)](https://github.com/dominique-mueller/angular2-notifier/LICENSE)
 [![dependency status](https://img.shields.io/david/dominique-mueller/angular2-notifier.svg?maxAge=2592000)](https://david-dm.org/dominique-mueller/angular2-notifier)

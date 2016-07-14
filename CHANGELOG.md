@@ -4,6 +4,19 @@ Similar to the [GitHub release page](https://github.com/dominique-mueller/angula
 
 <br>
 
+## [0.2.1](https://github.com/dominique-mueller/angular2-notifier/releases/tag/0.2.1) / 2016-07-15
+
+**Bugfixes**
+
+* Fixed errors when using the library in combination with routing
+
+**Development**
+
+* Updated & optimized Gulp tasks
+
+
+<br>
+
 ## [0.2.0](https://github.com/dominique-mueller/angular2-notifier/releases/tag/0.2.0) / 2016-07-10
 
 **First release**
