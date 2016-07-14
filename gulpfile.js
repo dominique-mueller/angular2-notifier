@@ -5,6 +5,7 @@
  */
 const browserSync = require( 'browser-sync' );
 const gulp = require( 'gulp' );
+const gutil = require( 'gulp-util' );
 
 /**
  * Gulp tasks imports
@@ -83,36 +84,62 @@ gulp.task( 'watch',
 				}
 			} );
 
-			// Watch project files
-			gulp.watch( [
-				'./src/**/*.ts',
-				'./index.ts'
+			// Project TypeScript watcher
+			const projectTypescriptWatcher = gulp.watch( [
+				'!src/**/*.d.ts',
+				'src/**/*.ts',
+				'!index.d.ts',
+				'index.ts'
 			], gulp.series( [
 				'typescript:build',
-				browserSync.reload
+				'watch-reload'
 			] ) );
-			gulp.watch( [
-				'./styles/**/*.scss'
+			projectTypescriptWatcher.on( 'change', ( path ) => {
+				gutil.log( `File "${ path }" changed!` );
+			} );
+
+			// Project SASS watcher
+			const projectSassWatcher = gulp.watch( [
+				'styles/**/*.scss'
 			], gulp.series( [
 				'sass:build',
-				browserSync.reload
+				'watch-reload'
 			] ) );
+			projectSassWatcher.on( 'change', ( path ) => {
+				gutil.log( `File "${ path }" changed!` );
+			} );
 
-			// Watch demo files
-			gulp.watch( [
-				'./demo/*.ts'
+			// Demo TypeScript watcher
+			const demoTypeScriptWatcher = gulp.watch( [
+				'demo/*.ts'
 			], gulp.series( [
 				'typescript:build--demo',
-				browserSync.reload
+				'watch-reload'
 			] ) );
-			gulp.watch( [
-				'./demo/index.html',
-				'./demo/style.css',
-				'./demo/systemjs.config.js'
+			demoTypeScriptWatcher.on( 'change', ( path ) => {
+				gutil.log( `File "${ path }" changed!` );
+			} );
+
+			// Demo file (others) watcher
+			const demoOtherWatcher = gulp.watch( [
+				'demo/index.html',
+				'demo/style.css',
+				'demo/systemjs.config.js'
 			], gulp.series( [
-				browserSync.reload
+				'watch-reload'
 			] ) );
+			demoOtherWatcher.on( 'change', ( path ) => {
+				gutil.log( `File "${ path }" changed!` );
+			} );
 
 		}
 	] )
 );
+
+/**
+ * Gulp task: Reload browser-sync (helper, because 'browserSync.reload' doesn't work directly in 'gulp.series')
+ */
+gulp.task( 'watch-reload', ( done ) => {
+	browserSync.reload();
+	done();
+} )

@@ -21,6 +21,9 @@
 # Demo
 /demo
 
+# GitHub
+/.github
+
 # Log files
 /npm-debug.log
 *.log

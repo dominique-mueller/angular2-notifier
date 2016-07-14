@@ -59,7 +59,7 @@
 			}
 		],
 		"new-parens": true,
-		"no-angle-bracket-type-assertion": true,
+		"no-angle-bracket-type-assertion": false,
 		"no-any": false,
 		"no-arg": true,
 		"no-bitwise": true,

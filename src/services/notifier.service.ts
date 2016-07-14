@@ -1,9 +1,9 @@
 /**
  * External imports
  */
-import { ApplicationRef, ComponentFactory, ComponentResolver, Injectable, ViewContainerRef } from '@angular/core';
+import { ApplicationRef, ComponentFactory, ComponentRef, ComponentResolver, Injectable,
+	ViewContainerRef } from '@angular/core';
 import { ViewContainerRef_ } from '@angular/core/src/linker/view_container_ref';
-import { ComponentRef_ } from '@angular/core/src/linker/component_factory';
 
 /**
  * Internal imports
@@ -20,6 +20,11 @@ import { NotifierContainerComponent } from './../components/notifier-container.c
 export class NotifierService {
 
 	/**
+	 * Component resolver
+	 */
+	private componentResolver: ComponentResolver;
+
+	/**
 	 * Notifier component
 	 */
 	private notifierContainer: NotifierContainerComponent;
@@ -31,25 +36,19 @@ export class NotifierService {
 	 */
 	public constructor( applicationRef: ApplicationRef, componentResolver: ComponentResolver ) {
 
-		// Dynamically add our notifier container into the document, after app bootstrap finished
-		// Inspired by the <https://github.com/valor-software/ng2-bootstrap/> components helper service
-		applicationRef.registerBootstrapListener( ( rootComponentRef: ComponentRef_<any> ) => {
+		this.componentResolver = componentResolver;
 
-			// Get the app root component (in a kind of hacky way, I know ...)
-			// See <https://github.com/angular/angular/issues/6446> for more details
-			const rootComponent: ViewContainerRef = new ViewContainerRef_( rootComponentRef[ '_hostElement' ] );
-
-			// Inject our component into the document, save its reference for later
-			componentResolver
-				.resolveComponent( NotifierContainerComponent )
-				.then( ( componentFactory: ComponentFactory<NotifierContainerComponent> ) => {
-					this.notifierContainer = rootComponent
-						.createComponent<NotifierContainerComponent>( componentFactory, rootComponent.length,
-							rootComponent.parentInjector )
-						.instance;
-				} );
-
-		} );
+		// Dynamically add our notifier container component into the document, next to the app component
+		// In the case we use this service in the root component, we first need to wait until the bootstrap is done
+		// Inspired by awesome people and their ideas on:
+		// <http://stackoverflow.com/questions/34970778/get-root-component-elementref-or-componentref-angular-2>
+		if ( ( <any> applicationRef )[ '_rootComponents' ].length === 0 ) {
+			applicationRef.registerBootstrapListener( ( rootComponentRef: ComponentRef<any> ) => {
+				this.setupComponent( rootComponentRef );
+			} );
+		} else {
+			this.setupComponent( ( <any> applicationRef )[ '_rootComponents' ][ 0 ] );
+		}
 
 	}
 
@@ -139,6 +138,27 @@ export class NotifierService {
 		return this.notifierContainer.doAction( {
 			type: CLEAR_NEWEST
 		} );
+	}
+
+	/**
+	 * Setup the notifier container component
+	 * @param {ComponentRef<any>} rootComponent Root component of the application
+	 */
+	private setupComponent( rootComponent: ComponentRef<any> ): void {
+
+		// Create the view container manually
+		const rootContainer: ViewContainerRef = new ViewContainerRef_( ( <any> rootComponent )[ '_hostElement' ] );
+
+		// Inject our component into the document, save its reference for later
+		this.componentResolver
+			.resolveComponent( NotifierContainerComponent )
+			.then( ( componentFactory: ComponentFactory<NotifierContainerComponent> ) => {
+				this.notifierContainer = rootContainer
+					.createComponent<NotifierContainerComponent>( componentFactory, rootContainer.length,
+						rootContainer.parentInjector )
+					.instance;
+			} );
+
 	}
 
 }
