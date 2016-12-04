@@ -1,3 +1,18 @@
+---
+
+## DEPRECATED in favor of [angular-notifier](https://github.com/dominique-mueller/angular-notifier).
+
+I renamed this library from **angular2-notifier** into **angular-notifier**, making clear that this library will not only work with Angular
+2.x, but some day also with further major releases (e.g. Angular 3, Angular 4, and so on).
+
+*There is no official migration guide; in most cases, comparing both README files should be enough for that. Your module loading / bundling
+configuration might need to be updated as well. For questions, please
+__[open a new issue](https://github.com/dominique-mueller/angular-notifier/issues)__.*
+
+---
+
+<br><br><br>
+
 [![GitHub release](https://img.shields.io/github/release/dominique-mueller/angular2-notifier.svg?maxAge=2592000)](https://github.com/dominique-mueller/angular2-notifier/releases)
 [![npm version](https://img.shields.io/npm/v/angular2-notifier.svg?maxAge=2592000)](https://www.npmjs.com/package/angular2-notifier)
 [![license](https://img.shields.io/npm/l/angular2-notifier.svg?maxAge=2592000)](https://github.com/dominique-mueller/angular2-notifier/LICENSE)
